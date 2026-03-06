@@ -1,0 +1,232 @@
+﻿.pills {
+    /* overflow: visible; */
+    background: #f5f7fa;
+    height: 20px;
+    /* margin: 21px 0 14px; */
+    padding-left: 14px;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    border-bottom: 1px solid #e6e9ed;
+}
+
+.nav-item {
+    margin-left: 8px;
+    border: 1px solid #e6e9ed !important;
+    margin-top: -17px !important;
+    background: #f5f7fa;
+}
+
+    .nav-item:hover {
+        margin-left: 8px;
+        border: 1px solid #e6e9ed !important;
+        margin-top: -17px !important;
+        background: #fff;
+    }
+
+    .nav-link.active,
+    .nav-item.show .nav-link {
+        border-right: 5px solid #1abb9c !important;
+    }
+
+.x_content {
+    margin-top: 15px !important;
+}
+
+.dataTables_length {
+    float: left;
+}
+
+.dataTables_info {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridPaises_info {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridPaises_length {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridEstados_info {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridEstados_length {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridDelegacion_info {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridDelegacion_length {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridZip_info {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridSequence_info {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridSequence_length {
+    float: left;
+}
+#ContentPlaceHolder1_GridZip_length {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridPaises tbody tr {
+    cursor: pointer;
+}
+
+#ContentPlaceHolder1_GridEstados tbody tr {
+    cursor: pointer;
+}
+
+#ContentPlaceHolder1_GridDelegacion tbody tr {
+    cursor: pointer;
+}
+
+#ContentPlaceHolder1_GridZip tbody tr {
+    cursor: pointer;
+}
+
+#ContentPlaceHolder1_GridCampus_info {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridCampus tbody tr {
+    cursor: pointer;
+}
+
+#ContentPlaceHolder1_GridCampus_length {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridProgramas_info {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridProgramas tbody tr {
+    cursor: pointer;
+}
+
+#ContentPlaceHolder1_GridProgramas_length {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridCobranzas_info {
+    float: left;
+}
+
+#ContentPlaceHolder1_GridCobranza tbody tr {
+    cursor: pointer;
+}
+
+#ContentPlaceHolder1_GridCobranza_length {
+    float: left;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    color: #fff;
+    border-color: #1abb9c;
+    background-color: #1abb9c;
+}
+
+.bottom {
+    text-align: center;
+    padding-top: 5px;
+}
+
+@media screen and (max-width: 540px) {
+    .bottom {
+        margin-top: 50px;
+        text-align: center;
+        display: grid;
+    }
+}
+
+.ddlist {
+    left: 725px;
+    text-align: center;
+}
+
+.center_column {
+    text-align: center;
+}
+
+.ocultar {
+    display: none;
+}
+
+table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected {
+    background-color: #88e5cf !important;
+}
+
+.buttons-excel {
+    margin-right: 5px !important;
+    border-top-right-radius: 3px !important;
+    border-bottom-right-radius: 3px !important;
+}
+
+.buttons-pdf {
+    border-top-left-radius: 3px !important;
+    border-bottom-left-radius: 3px !important;
+}
+
+/*.dataTables_scroll {
+    height: 270px !important;
+}*/
+
+.focus {
+    border: 1px solid rgb(227, 65, 0);
+}
+
+.dataTables_paginate .active a {
+    background: #2a3f54 !important;
+    border-color: #2a3f54 !important;
+    color: #fff !important;
+}
+
+.button_select {
+    text-align: center;
+}
+
+.textoError {
+    color: #ec0a0a;
+}
+
+.selected_table {
+    color: White !important;
+    background-color: #1ABB9C !important;
+    font-size: Small !important;
+    font-weight: bold !important;
+}
+
+.nav-tabs .nav-item {
+    border-top-left-radius: .25rem !important;
+    border-top-right-radius: .25rem !important;
+}
+
+    .nav-tabs .nav-item.show .nav-link, .nav-tabs {
+        color: #495057;
+        background-color: #f7f7f;
+        border-color: #e6e9ed !important;
+    }
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    color: #fff;
+    border-color: #1abb9c !important;
+    background-color: #1abb9c !important;
+}
+.imgbtn {
+    width: 25px;
+    margin-top: -30px;
+    margin-right: 10px;
+    float: right;
+}

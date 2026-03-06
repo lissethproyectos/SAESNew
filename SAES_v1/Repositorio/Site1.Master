@@ -1,0 +1,378 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site1.master.cs" Inherits="SAES_v1.Repositorio.Site1" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title></title>
+
+    <!-- Bootstrap -->
+    <link href="../Template/Sitemaster/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Datatables -->
+
+    <link href="../Template/Sitemaster/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="../Template/Sitemaster/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="../Template/Sitemaster/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="../Template/Sitemaster/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="../Template/Sitemaster/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css" rel="stylesheet" />
+
+
+
+    <!-- Font Awesome -->
+    <link href="../Template/Sitemaster/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/aff8921cf8.js" crossorigin="anonymous"></script>
+    <!-- NProgress -->
+    <link href="../Template/Sitemaster/vendors/nprogress/nprogress.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="../Template/Sitemaster/build/css/custom.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    
+
+    <!--Sweet Alert-->
+    <script src="../Script/SweetAlert/sweetalert.js"></script>
+    <link href="../Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+    <style>
+        .loader {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            /*background: url('Images/Sitemaster/loader.gif') 50% 50% no-repeat rgb(249,249,249);*/
+            opacity: 1;
+            background-color: #2a3f54;
+        }
+
+        .loader1 {
+            position: fixed;
+            left: 15%;
+            top: 10%;
+            width: 85%;
+            height: 100%;
+            z-index: 3;
+            /* background: url(Images/Sitemaster/loader.gif) 50% 50% no-repeat rgb(249,249,249); */
+            opacity: 0.8;
+            background-color: #2a3f54;
+        }
+
+        /* -------------- Clock -------------- */
+
+        .clock {
+            border-radius: 60px;
+            border: 3px solid #26b99a;
+            height: 80px;
+            width: 80px;
+            position: relative;
+            top: 28%;
+            top: -webkit-calc(50% - 43px);
+            top: calc(50% - 43px);
+            left: 35%;
+            left: -webkit-calc(50% - 43px);
+            left: calc(50% - 43px);
+        }
+
+            .clock:after {
+                content: "";
+                position: absolute;
+                background-color: #26b99a;
+                top: 2px;
+                left: 48%;
+                height: 38px;
+                width: 4px;
+                border-radius: 5px;
+                -webkit-transform-origin: 50% 97%;
+                transform-origin: 50% 97%;
+                -webkit-animation: grdAiguille 2s linear infinite;
+                animation: grdAiguille 2s linear infinite;
+            }
+
+        @-webkit-keyframes grdAiguille {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes grdAiguille {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .clock:before {
+            content: "";
+            position: absolute;
+            background-color: #26b99a;
+            top: 6px;
+            left: 48%;
+            height: 35px;
+            width: 4px;
+            border-radius: 5px;
+            -webkit-transform-origin: 50% 94%;
+            transform-origin: 50% 94%;
+            -webkit-animation: ptAiguille 12s linear infinite;
+            animation: ptAiguille 12s linear infinite;
+        }
+
+        @-webkit-keyframes ptAiguille {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes ptAiguille {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<script type="text/javascript">
+    //$(window).on("load", function () {
+    //    $(".loader").fadeOut("slow");
+    //});
+    function loader_push() {
+        $(".loader1").fadeIn("slow");
+    }
+    function loader_stop() {
+        $(".loader1").fadeOut("slow");
+    }
+</script>
+<body class="nav-md">
+    <div class="loader" style="display: none;">
+        <div class="clock"></div>
+    </div>
+    <div class="loader1" style="display: none;">
+        <div class="clock"></div>
+    </div>
+    <form id="form1" runat="server">
+        <asp:ScriptManager ID="script_site" runat="server"></asp:ScriptManager>
+        <div class="container body">
+            <div class="main_container">
+                <div class="col-md-3 left_col menu-fixed">
+                    <div class="left_col scroll-view">
+                        <div class="navbar nav_title" style="border: 0;">
+                            <a href="Inicio.aspx" class="site_title">
+                                <img src="../Images/Sitemaster/Logo.png" style="width: 50px;" /><span><img src="../Images/Sitemaster/Logo_B_2.png" style="width: 150px;" /></span></a>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                        <!-- menu profile quick info -->
+                        <div class="profile clearfix">
+                            <div class="profile_info" style="margin: auto;">
+                                <span>Bienvenido,<asp:Label ID="nombre" runat="server" Text=""></asp:Label></span>
+                                <span>Perfil:<asp:Label ID="perfil" runat="server" Text=""></asp:Label></span>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <!-- /menu profile quick info -->
+                        <!-- sidebar menu -->
+                        <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                            <div class="menu_section">
+                                <h3>Menu</h3>
+                                <ul class="nav side-menu">
+                                    <li id="operacion" runat="server"><a><i class="fas fa-desktop" style="padding-right: 5px;"></i>Operación <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="demograficos" runat="server"><a href="../tpais.aspx">Catálogos Demográficos</a></li>
+                                            <li id="campus" runat="server"><a href="../tcamp.aspx">Catálogo Campus</a></li>
+                                            <li id="periodos" runat="server"><a href="../tpees.aspx">Periodos Escolares</a></li>
+                                            <li id="tdireccion" runat="server"><a href="../tdire.aspx">Tipos-Dirección</a></li>
+                                            <li id="ttelefono" runat="server"><a href="../ttele.aspx">Tipos-Teléfono</a></li>
+                                            <li id="tcorreo" runat="server"><a href="../tmail.aspx">Tipos-Correo</a></li>
+                                            <li id="tcontacto" runat="server"><a href="../tcont.aspx">Tipos-Contactos</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="prospectos" runat="server"><a><i class="fab fa-sellsy" style="padding-right: 5px;"></i>Prospectos <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="generales" runat="server"><a href="../#">Datos Generales</a></li>
+                                            <li id="eventos" runat="server"><a href="../#">Eventos</a></li>
+                                            <li id="seguimiento" runat="server"><a href="../#">Seguimiento</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="admision" runat="server"><a><i class="fas fa-user-plus" style="padding-right: 5px;"></i>Admisión <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="estatus" runat="server"><a href="../tstso.aspx">Estatus-Solicitud</a></li>
+                                            <li id="tingreso" runat="server"><a href="../ttiin.aspx">Tipos-Ingreso</a></li>
+                                            <li id="solicitud" runat="server"><a href="../tpers.aspx">Solicitud</a></li>
+                                            <li id="contactos" runat="server"><a href="../tcoda.aspx">Contactos</a></li>
+                                            <li id="documentos" runat="server"><a href="../tdocu.aspx">Documentos</a></li>
+                                            <li id="procedencia" runat="server"><a href="../tespr.aspx">Escuelas-Procedencia</a></li>
+                                            <li id="pronostico" runat="server"><a href="../tpron.aspx">Pronóstico-Nuevo Ingreso</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="repositorio" runat="server"><a><i class="fas fa-file-upload" style="padding-right: 5px;"></i>Repositorio de Documentos <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="tdocumentos" runat="server"><a href="Tipodocumentos.aspx">Configuración de Documentos</a></li>
+                                            <li id="permisos_repo" runat="server"><a href="Permisos.aspx">Configuración de Permisos</a></li>
+                                            <li id="expedientes" runat="server"><a href="ListadoAdministracion.aspx">Expedientes</a></li>
+                                            <li id="carga_alumno" runat="server"><a href="CargaDocumentos.aspx">Carga de Documentos</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="escolares" runat="server"><a><i class="fas fa-graduation-cap" style="padding-right: 5px;"></i>Control Escolar <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="bajas" runat="server"><a href="../ttiba.aspx">Tipos-Baja</a></li>
+                                            <li id="conceptos" runat="server"><a href="../tcoca.aspx">Conceptos-Calendario</a></li>
+                                            <li id="calificaciones" runat="server"><a href="../tcali.aspx">Calificaciones</a></li>
+                                            <li id="equivalencias" runat="server"><a href="../tpred.aspx">Revalidación-Equivalencias</a></li>
+                                            <li id="estatus_a" runat="server"><a href="../tstal.aspx">Estatus-Alumnos</a></li>
+                                            <li id="calendario" runat="server"><a href="../tcaes.aspx">Calendario Escolar</a></li>
+                                            <li id="inscripcion" runat="server"><a href="../ttira.aspx">Inscripción-Materias</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="planeacion" runat="server"><a><i class="fas fa-book-open" style="padding-right: 5px;"></i>Planeación Académica <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="niveles" runat="server"><a href="../#">Nivel-Educativo</a></li>
+                                            <li id="colegios" runat="server"><a href="../#">Colegios</a></li>
+                                            <li id="modalidad" runat="server"><a href="../#">Modalidad</a></li>
+                                            <li id="programas" runat="server"><a href="../#">Programas Académicos</a></li>
+                                            <li id="areas" runat="server"><a href="../#">Areas de estudio</a></li>
+                                            <li id="materias" runat="server"><a href="../#">Materias</a></li>
+                                            <li id="planes" runat="server"><a href="../#">Planes de estudio</a></li>
+                                            <li id="plantilla" runat="server"><a href="../#">Plantilla Docente</a></li>
+                                            <li id="salones" runat="server"><a href="../#">Catálogo de Salones</a></li>
+                                            <li id="grupos" runat="server"><a href="../#">Grupos-Horarios</a></li>
+                                            <li id="proyeccion" runat="server"><a href="../#">Proyección-Horarios</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="Finanzas" runat="server"><a><i class="fas fa-hand-holding-usd" style="padding-right: 5px;"></i>Finanzas <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="codigos" runat="server"><a href="../#">Conceptos-Cobranza</a></li>
+                                            <li id="cuotas" runat="server"><a href="../#">Cuotas</a></li>
+                                            <li id="tasa" runat="server"><a href="../#">Configuración-Tasa</a></li>
+                                            <li id="vencimientos" runat="server"><a href="../#">Fechas de Vencimiento</a></li>
+                                            <li id="plan" runat="server"><a href="../#">Plan-Cobro-Beca</a></li>
+                                            <li id="cuenta" runat="server"><a href="../#">Cobros-Cuenta</a></li>
+                                            <li id="bancos" runat="server"><a href="../#">Bancos</a></li>
+                                            <li id="asignacion" runat="server"><a href="../#">Asignación Alumnos</a></li>
+                                            <li id="reportes" runat="server"><a href="../#">Reportes-Cierre</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="Seguridad" runat="server"><a href="#"><i class="fas fa-shield-alt" style="padding-right: 5px;"></i>Seguridad</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- /sidebar menu -->
+
+                        <!-- /menu footer buttons -->
+                        <div class="sidebar-footer hidden-small">
+                        </div>
+                        <!-- /menu footer buttons -->
+                    </div>
+                </div>
+
+                <!-- top navigation -->
+                <div class="top_nav">
+                    <div class="nav_menu">
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <nav class="nav navbar-nav">
+                            <ul class=" navbar-right">
+                                <span style="font-size: xx-large; padding-left: 200px;">Sistema de Administración Escolar-SAES</span>
+                                <li class="nav-item dropdown open" style="padding-left: 15px; padding-top: 10px;">
+                                    <span style="padding-right: 10px;"><asp:Label ID="nombre_1" runat="server" Text=""></asp:Label> | <asp:Label ID="perfil_1" runat="server" Text=""></asp:Label> </span>
+                                    <asp:LinkButton ID="logout_btn" runat="server" OnClick="logout_btn_Click"><span class="glyphicon glyphicon-off" aria-hidden="true" style="font-size: large;"></span></asp:LinkButton>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <!-- /top navigation -->
+
+                <!-- page content -->
+                <div class="right_col" role="main">
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12  ">
+
+                            <div class="x_panel">
+                                <div class="x_content">
+
+                                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                                    </asp:ContentPlaceHolder>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer>
+                <div class="pull-right">
+                    Derechos Reservados
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+        </div>
+
+        <!-- jQuery -->
+        <%--<script src="../Template/Sitemaster/vendors/jquery/dist/jquery.min.js"></script>
+        <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>--%>
+        <!-- Bootstrap -->
+        <script src="../Template/Sitemaster/vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- FastClick -->
+        <script src="../Template/Sitemaster/vendors/fastclick/lib/fastclick.js"></script>
+        <!-- NProgress -->
+        <script src="../Template/Sitemaster/vendors/nprogress/nprogress.js"></script>
+
+        <!-- Custom Theme Scripts -->
+        <script src="../Template/Sitemaster/build/js/custom.min.js"></script>
+
+        <!-- Datatables -->
+        <script src="../Template/Sitemaster/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/jszip/dist/jszip.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/pdfmake/build/pdfmake.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/pdfmake/build/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
+
+
+    </form>
+</body>
+</html>
+

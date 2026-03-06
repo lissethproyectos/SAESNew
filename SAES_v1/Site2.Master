@@ -1,0 +1,641 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site2.Master.cs" Inherits="SAES_v1.Site2" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title></title>
+
+    <!-- Saes Style -->
+    <link href="../Content/Saes.css" rel="stylesheet" />
+    <!-- Bootstrap -->
+    <link href="../Template/Sitemaster/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Datatables -->
+
+    <link href="../Template/Sitemaster/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="../Template/Sitemaster/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="../Template/Sitemaster/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="../Template/Sitemaster/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="../Template/Sitemaster/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css" rel="stylesheet" />
+    <script src="../Content/Custom/js/DataTable.js"></script>
+    <script src="../Scripts/jquery-1.12.4.min.js"></script>
+    <script src="../Scripts/select2.min.js"></script>
+    <link href="../Content/css/select2.min.css" rel="stylesheet" />
+    <!-- FormControls -->
+    <script src="../Content/Custom/js/FormControls.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="../Template/Sitemaster/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/aff8921cf8.js" crossorigin="anonymous"></script>
+    <!-- NProgress -->
+    <link href="../Template/Sitemaster/vendors/nprogress/nprogress.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="../Template/Sitemaster/build/css/custom.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <%--<script src="Template/Sitemaster/vendors/jquery/dist/jquery.min.js"></script>--%>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js" integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g==" crossorigin="anonymous"></script>
+
+    <!-- Chosen -->
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.min.css" rel="stylesheet" />
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
+    <link href="../Content/Custom/css/chosen.css" rel="stylesheet" />
+
+    <!--Sweet Alert-->
+    <script src="../Script/SweetAlert/sweetalert.js"></script>
+    <link href="../Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+    <script src="../Content/Custom/js/AlertasSweet.js"></script>
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+    <style>
+        .bg-gris {
+            background-color: #ededed !important;
+        }
+
+        .loader2 {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            /*background: url('Images/Sitemaster/loader.gif') 50% 50% no-repeat rgb(249,249,249);*/
+            opacity: 1;
+            background-color: #2a3f54;
+        }
+
+        .loader11 {
+            position: fixed;
+            left: 15%;
+            top: 10%;
+            width: 85%;
+            height: 100%;
+            z-index: 3;
+            /* background: url(Images/Sitemaster/loader.gif) 50% 50% no-repeat rgb(249,249,249); */
+            opacity: 0.8;
+            background-color: #2a3f54;
+        }
+
+        /* -------------- Clock -------------- */
+
+        .clock2 {
+            border-radius: 60px;
+            border: 3px solid #26b99a;
+            height: 80px;
+            width: 80px;
+            position: relative;
+            top: 28%;
+            top: -webkit-calc(50% - 43px);
+            top: calc(50% - 43px);
+            left: 35%;
+            left: -webkit-calc(50% - 43px);
+            left: calc(50% - 43px);
+        }
+
+        .clock:after {
+            content: "";
+            position: absolute;
+            background-color: #26b99a;
+            top: 2px;
+            left: 48%;
+            height: 38px;
+            width: 4px;
+            border-radius: 5px;
+            -webkit-transform-origin: 50% 97%;
+            transform-origin: 50% 97%;
+            -webkit-animation: grdAiguille 2s linear infinite;
+            animation: grdAiguille 2s linear infinite;
+        }
+
+        @-webkit-keyframes grdAiguille {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes grdAiguille {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .clock:before {
+            content: "";
+            position: absolute;
+            background-color: #26b99a;
+            top: 6px;
+            left: 48%;
+            height: 35px;
+            width: 4px;
+            border-radius: 5px;
+            -webkit-transform-origin: 50% 94%;
+            transform-origin: 50% 94%;
+            -webkit-animation: ptAiguille 12s linear infinite;
+            animation: ptAiguille 12s linear infinite;
+        }
+
+        @-webkit-keyframes ptAiguille {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes ptAiguille {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .classHide {
+            display: none
+        }
+    </style>
+    <script>
+        function sin_acceso() {
+            swal({
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                type: 'error',
+                html: '<h2 class="swal2-title" id="swal2-title">Error al accesar</h2>El usuario no cuenta con permisos para acceder a esta pagina.'
+            })
+                .then(willDelete => {
+                    if (willDelete) {
+                        loader_push();
+                        window.location = "Inicio.aspx";
+                    }
+                });
+        }
+    </script>
+</head>
+<script type="text/javascript">
+    $(window).on("load", function () {
+        $(".loader1").fadeOut("slow");
+    });
+    function loader_push() {
+        $(".loader1").fadeIn("slow");
+    }
+    function loader_stop() {
+        $(".loader1").fadeOut("slow");
+    }
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+<body class="nav-md">
+    <div class="loader" style="display: none;">
+        <div class="clock"></div>
+    </div>
+    <div class="loader1">
+        <div class="clock"></div>
+    </div>
+    <form id="form1" runat="server">
+        <asp:ScriptManager ID="script_site" runat="server"></asp:ScriptManager>
+        <div class="container body">
+            <div class="main_container">
+                <div class="col-md-3 left_col menu-fixed">
+                    <div class="left_col scroll-view">
+                        <div class="navbar nav_title" style="border: 0;">
+                            <a href="Dashboard.aspx" class="site_title">
+                                <img src="../Images/Sitemaster/logo_3.png" style="width: 180px;" /></a>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                        <!-- menu profile quick info -->
+                        <div class="profile clearfix">
+                            <div class="profile_info" style="margin: auto;">
+                                <span>Bienvenido,<asp:Label ID="nombre" runat="server" Text=""></asp:Label></span>
+                                <span>Perfil:<asp:Label ID="perfil" runat="server" Text=""></asp:Label></span>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <%--                        <div class="navbar nav_title" style="border: 0;">
+<a href="index.html" class="site_title"><i class="fa fa-paw"></i> <span>Gentelella Alela!</span></a>
+</div>--%>
+
+                        <!-- /menu profile quick info -->
+                        <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                            <div class="menu_section">
+                                <h3>Menu</h3>
+                                <asp:Repeater ID="Menu" runat="server" OnItemDataBound="mnu_ItemDataBound">
+                                    <HeaderTemplate>
+                                        <ul class="nav side-menu">
+                                    </HeaderTemplate>
+                                    <FooterTemplate>
+                                        </ul>
+                                    </FooterTemplate>
+                                    <ItemTemplate>
+                                        <li>
+                                            <a>
+                                                <i class='<%# DataBinder.Eval(Container.DataItem, "tmenu_icono") %>' style="padding-right: 5px;"></i>
+                                                <%# DataBinder.Eval(Container.DataItem, "tmenu_desc") %>
+                                                <span class="fa fa-chevron-down" aria-hidden="true"></span>
+                                                <asp:HiddenField ID="hddnClavePadre" Value='<%# DataBinder.Eval(Container.DataItem, "tmenu_id") %>' runat="server" />
+                                            </a>
+                                            <ul class="nav child_menu">
+                                                <asp:Repeater ID="SubMenu" runat="server" OnItemDataBound="submnu1_ItemDataBound">
+                                                    <ItemTemplate>
+                                                        <li>
+                                                            <a><%# DataBinder.Eval(Container.DataItem, "tmede_desc") %>
+                                                                <asp:HiddenField ID="hddnClaveSub" Value='<%# DataBinder.Eval(Container.DataItem, "tmede_padre") %>' runat="server" />
+                                                            </a>
+                                                            <ul class="nav child_menu">
+                                                                <asp:Repeater ID="SubSubMenu" runat="server">
+                                                                    <ItemTemplate>
+                                                                        <li>
+                                                                <asp:HiddenField ID="hddnClaveSubSub" Value='<%# DataBinder.Eval(Container.DataItem, "tmede_padre") %>' runat="server" />
+
+                                                                            <a href="../tpais.aspx">Pa&iacute;ses</a></li>
+                                                                    </ItemTemplate>
+                                                                </asp:Repeater>
+                                                            </ul>
+                                                        </li>
+                                                    </ItemTemplate>
+                                                </asp:Repeater>
+                                            </ul>
+                                        </li>
+                                    </ItemTemplate>
+
+                                </asp:Repeater>
+                            </div>
+
+                        </div>
+
+                        <!-- sidebar menu -->
+                        <div id="sidebar-menu2" class="main_menu_side hidden-print main_menu">
+                            <div class="menu_section">
+                                <h3>Menu</h3>
+                                <ul class="nav side-menu">
+                                    <li id="operacion" runat="server"><a><i class="fas fa-desktop" style="padding-right: 5px;"></i>Operaci&oacute;n <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="demograficos" runat="server"><a><i style="padding-right: 5px;"></i>Demogr&aacute;ficos <span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tpais" runat="server" visible="false"><a href="../tpais.aspx">Pa&iacute;ses</a></li>
+                                                    <li id="testa" runat="server" visible="false"><a href="../testa.aspx">Ent. Federativa</a></li>
+                                                    <li id="tdele" runat="server" visible="false"><a href="../tdele.aspx">Alcaldia/Munic.</a></li>
+                                                    <li id="tcopo" runat="server" visible="false"><a href="../tcopo.aspx">C&oacute;digos Postales</a></li>
+                                                </ul>
+                                            </li>
+                                            <li id="campus" runat="server"><a><i style="padding-right: 5px;"></i>Campus <span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tcamp" runat="server" visible="false"><a href="../tcamp.aspx">Cat&aacute;logo Campus</a></li>
+                                                    <li id="tcapr" runat="server" visible="false"><a href="../tcapr.aspx">Programas x Campus</a></li>
+                                                    <li id="tpaco" runat="server" visible="false"><a href="../tpaco.aspx">Par&aacute;metros Cobranza</a></li>
+                                                    <li id="tcseq" runat="server" visible="false"><a href="../tcseq.aspx">Secuencias</a></li>
+                                                </ul>
+                                            </li>
+                                            <li id="tipos" runat="server"><a><i style="padding-right: 5px;"></i>Tipos <span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tdire" runat="server" visible="false"><a href="../tdire.aspx">Direcci&oacute;n</a></li>
+                                                    <li id="ttele" runat="server" visible="false"><a href="../ttele.aspx">Tel&eacute;fono</a></li>
+                                                    <li id="tmail" runat="server" visible="false"><a href="../tmail.aspx">Correo</a></li>
+                                                    <li id="tcont" runat="server" visible="false"><a href="../tcont.aspx">Contacto</a></li>
+                                                </ul>
+                                            </li>
+                                            <li id="periodos" runat="server" visible="false"><a href="../tpees.aspx">Periodos Escolares</a></li>
+                                            <li id="funcionarios" runat="server" visible="false"><a href="../tfuca.aspx">Funcionarios</a></li>
+
+                                        </ul>
+                                    </li>
+                                    <li id="prospectos" runat="server"><a><i class="fab fa-sellsy" style="padding-right: 5px;"></i>Prospectos <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="generales" runat="server" visible="false"><a href="#">Datos Generales</a></li>
+                                            <li id="eventos" runat="server" visible="false"><a href="#">Eventos</a></li>
+                                            <li id="seguimiento" runat="server" visible="false"><a href="#">Seguimiento</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="admision" runat="server"><a><i class="fas fa-user-plus" style="padding-right: 5px;"></i>Admisi&oacute;n <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="tstso" runat="server" visible="false"><a href="../tstso.aspx">Estatus-Solicitud</a></li>
+                                            <li id="solicitud" runat="server"><a><i style="padding-right: 5px;"></i>Solicitud <span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tpers" runat="server" visible="false"><a href="../tpers.aspx">Datos Personale</a></li>
+                                                    <li id="taldi" runat="server" visible="false"><a href="../taldi.aspx">Datos Direcciones</a></li>
+                                                    <li id="talte" runat="server" visible="false"><a href="../talte.aspx">Datos Tel&eacute;fono</a></li>
+                                                    <li id="talco" runat="server" visible="false"><a href="../talco.aspx">Datos Correo</a></li>
+                                                    <li id="tadmi" runat="server" visible="false"><a href="../tadmi.aspx">Solicitud</a></li>
+                                                    <li id="tredo" runat="server" visible="false"><a href="../tredo.aspx">Relaci&oacute;n Documentos</a></li>
+                                                </ul>
+                                            </li>
+                                            <li id="documentos" runat="server"><a><i style="padding-right: 5px;"></i>Documentos <span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tdocu" runat="server" visible="false"><a href="../tdocu.aspx">Cat&aacute;logo Documentos</a></li>
+                                                    <li id="tcodo" runat="server" visible="false"><a href="../tcodo.aspx">Configuraci&oacute;n Documentos</a></li>
+                                                    <li id="tstdo" runat="server" visible="false"><a href="../tstdo.aspx">Estatus Documentos</a></li>
+                                                </ul>
+                                            </li>
+                                            <li id="tespr" runat="server" visible="false"><a href="../tespr.aspx">Escuelas-Procedencia</a></li>
+                                            <li id="tpron" runat="server" visible="false"><a href="../tpron.aspx">Pron&oacute;stico-Nuevo Ingreso</a></li>
+                                            <li id="contacto" runat="server"><a><i style="padding-right: 5px;"></i>Contactos Estudiante<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tcoda" runat="server" visible="false"><a href="../tcoda.aspx">Datos Personales</a></li>
+                                                    <li id="tcodi" runat="server" visible="false"><a href="../tcodi.aspx">Direcci&oacute;n</a></li>
+                                                    <li id="tcote" runat="server" visible="false"><a href="../tcote.aspx">Tel&eacute;fono</a></li>
+                                                    <li id="tcnco" runat="server" visible="false"><a href="../tcnco.aspx">Correo</a></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li id="repositorio" runat="server"><a><i class="fas fa-file-upload" style="padding-right: 5px;"></i>Repositorio de Documentos <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="Docto" runat="server" visible="false"><a href="../Repositorio/Tipodocumentos.aspx">Configuraci&oacute;n de Documentos</a></li>
+                                            <li id="Perm" runat="server" visible="false"><a href="../Repositorio/Permisos.aspx">Configuraci&oacute;n de Permisos</a></li>
+                                            <li id="List" runat="server" visible="false"><a href="../Repositorio/ListadoAdministracion.aspx">Expedientes</a></li>
+                                            <li id="carga_alumno" runat="server" visible="false"><a href="../Repositorio/CargaDocumentos.aspx">Carga de Documentos</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="escolares" runat="server"><a><i class="fas fa-graduation-cap" style="padding-right: 5px;"></i>Control Escolar <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="calendario" runat="server"><a><i style="padding-right: 5px;"></i>Calendario Escolar<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tcoca" visible="false" runat="server"><a href="../tcoca.aspx">Conceptos-Calendario</a></li>
+                                                    <li id="tcaes" visible="false" runat="server"><a href="../tcaes.aspx">Actividades-Calendario</a></li>
+                                                </ul>
+                                            </li>
+
+                                            <li id="bajas" runat="server"><a><i style="padding-right: 5px;"></i>Bajas<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="ttiba" visible="false" runat="server"><a href="../ttiba.aspx">Tipos-Baja</a></li>
+                                                    <li id="tbapa" visible="false" runat="server"><a href="../tbapa.aspx">Parámteros Devolución</a></li>
+                                                    <li id="tbaap" visible="false" runat="server"><a href="../tbaap.aspx">Aplicación de Baja</a></li>
+
+                                                </ul>
+                                            </li>
+                                            <li id="tpred" visible="false" runat="server"><a href="../tpred.aspx">Revalidaci&oacute;n-Equivalencias</a></li>
+                                            <li id="tstal" visible="false" runat="server"><a href="../tstal.aspx">Estatus-Alumnos</a></li>
+                                            <li id="tseri" visible="false" runat="server"><a href="../tseri.aspx">Seriaci&oacute;n Materias</a></li>
+                                            <li id="cali" runat="server"><a><i style="padding-right: 5px;"></i>Calificaciones<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tcali" visible="false" runat="server"><a href="../tcali.aspx">Cat&aacute;logo Calificaciones</a></li>
+                                                    <li id="ttiac" visible="false" runat="server"><a href="../ttiac.aspx">Tipos de Acreditaci&oacute;n</a></li>
+                                                    <li id="tcomp" visible="false" runat="server"><a href="../Tcomp.aspx">Componentes Calificaci&oacute;n</a></li>
+                                                    <li id="tcocx" visible="false" runat="server"><a href="../tcocx.aspx">Configuraci&oacute;n Componentes</a></li>
+                                                    <li id="tcacx" visible="false" runat="server"><a href="../tcacx.aspx">Calificacion por Componentes</a></li>
+                                                    <li id="tinss" visible="false" runat="server"><a href="../tinss.aspx">Registro de inasistencias</a></li>
+                                                    <li id="tconc" visible="false" runat="server"><a href="../tconc.aspx">Concentraci&oacute;n calificaciones</a></li>
+                                                </ul>
+                                            </li>
+                                            <li id="ttira" visible="false" runat="server"><a href="../ttira.aspx">Inscripci&oacute;n-Materias</a></li>
+                                            <li id="tkard" visible="false" runat="server"><a href="../tkard.aspx">Kardex (Historial Acad&eacute;mico)</a></li>
+                                            <li id="tbole" visible="false" runat="server"><a href="../tbole.aspx">Boleta de Calificaciones</a></li>
+                                            <li id="electronica" runat="server"><a><i style="padding-right: 5px;"></i>Procesos Electr&oacute;nicos<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tceel" visible="false" runat="server"><a href="../tceel.aspx">Certificaci&oacute;n Electr&oacute;nica</a></li>
+                                                    <li id="ttiel" visible="false" runat="server"><a href="../ttiel.aspx">Titulaci&oacute;n Electr&oacute;nica</a></li>
+                                                </ul>
+                                            </li>
+                                            <li id="ssoci" runat="server"><a><i style="padding-right: 5px;"></i>Servicio Social<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tress" visible="false" runat="server"><a href="../tress.aspx">Registro de Servicio Social</a></li>
+                                                    <li id="tcrss" visible="false" runat="server"><a href="../tcrss.aspx">Reporte de Registro de Servicio Social</a></li>
+                                                </ul>
+                                            </li>
+                                            <li id="titu" runat="server"><a><i style="padding-right: 5px;"></i>Titulaci&oacute;n<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="ttini" visible="false" runat="server"><a href="../ttini.aspx">Configuración de Titulación</a></li>
+                                                    <li id="ttiop" visible="false" runat="server"><a href="../ttiop.aspx">Cat Opciones de Titulaci&oacute;n</a></li>
+                                                    <li id="treti" visible="false" runat="server"><a href="../treti.aspx">Registro a Titulaci&oacute;n</a></li>
+                                                    <li id="trtit" visible="false" runat="server"><a href="../trtit.aspx">Reporte Registro de Titulaci&oacute;n</a></li>
+
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li id="planeacion" runat="server"><a><i class="fas fa-book-open" style="padding-right: 5px;"></i>Planeaci&oacute;n Acad&eacute;mica <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="tnive" runat="server" visible="false"><a href="../tnive.aspx">Nivel-Educativo</a></li>
+                                            <li id="tcole" runat="server" visible="false"><a href="../tcole.aspx">Colegios</a></li>
+                                            <li id="tmoda" runat="server" visible="false"><a href="../tmoda.aspx">Modalidad</a></li>
+                                            <li id="tprog" runat="server" visible="false"><a href="../tprog.aspx">Programas Acad&eacute;micos</a></li>
+                                            <li id="tarea" runat="server" visible="false"><a href="../tarea.aspx">&Aacute;reas de estudio</a></li>
+                                            <li id="tmate" runat="server" visible="false"><a href="../tmate.aspx">Materias</a></li>
+                                            <li id="tplan" runat="server" visible="false"><a href="../tplan.aspx">Planes de estudio</a></li>
+                                            <li id="Docente" runat="server"><a><i style="padding-right: 5px;"></i>Plantilla Docente<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tpdoc" runat="server" visible="false"><a href="../tpdoc.aspx">Datos Personales</a></li>
+                                                    <li id="tdodi" runat="server" visible="false"><a href="../tdodi.aspx">Direcci&oacute;n</a></li>
+                                                    <li id="tdote" runat="server" visible="false"><a href="../tdote.aspx">Tel&eacute;fono</a></li>
+                                                    <li id="tdoco" runat="server" visible="false"><a href="../tdoco.aspx">Correo</a></li>
+                                                    <li id="tdoce" runat="server" visible="false"><a href="../tdoce.aspx">Datos Acad&eacute;micos</a></li>
+                                                    <li id="tdido" runat="server" visible="false"><a href="../tdido.aspx">Disponibilidad</a></li>
+                                                </ul>
+                                            </li>
+                                            <li id="tsalo" runat="server" visible="false"><a href="../tsalo.aspx">Cat&aacute;logo de Salones</a></li>
+                                            <li id="Grupos" runat="server"><a><i style="padding-right: 5px;"></i>Carga acad&eacute;mica<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tgrup" runat="server" visible="false"><a href="../tgrup.aspx">Grupos/Materia</a></li>
+                                                    <li id="thora" runat="server" visible="false"><a href="../thora.aspx">Horario Grupo-Materia</a></li>
+                                                    <li id="thodo" runat="server" visible="false"><a href="../thodo.aspx">Asignaci&oacute;n Docente</a></li>
+                                                    <li id="tgeho" runat="server" visible="false"><a href="../tgeho.aspx">Generaci&oacute;n Horarios</a></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li id="Finanzas" runat="server"><a><i class="fas fa-hand-holding-usd" style="padding-right: 5px;"></i>Finanzas <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="tcoco" runat="server"><a href="../tcoco.aspx">Conceptos-Cobranza</a></li>
+                                            <li id="tcuot" runat="server"><a href="../tcuot.aspx">Configuraci&oacute;n Cuotas</a></li>
+                                            <li id="tasa" runat="server"><a><i style="padding-right: 5px;"></i>Configuraci&oacute;n Tasa<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="ttasa" runat="server" visible="false"><a href="../ttasa.aspx">Cat&aacute;logo Tasa</a></li>
+                                                    <li id="tcomb" runat="server" visible="false"><a href="../tcomb.aspx">Conf. Tasa / Concepto Cobranza</a></li>
+                                                    <li id="ttama" runat="server" visible="false"><a href="../ttama.aspx">Tasa / No.Materias</a></li>
+                                                </ul>
+                                            </li>
+                                            <li id="tfeve" runat="server"><a href="../tfeve.aspx">Fechas de Vencimiento</a></li>
+                                            <li id="tgeca" runat="server"><a href="../tgeca.aspx">Generación Estado de Cuenta</a></li>
+                                            <li id="plan_beca" runat="server"><a><i style="padding-right: 5px;"></i>Plan-Cobro-Beca<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li id="tpcbe" runat="server" visible="false"><a href="../tpcbe.aspx">Configuración de Plan de Cobro</li>
+                                                    <li id="tepcb" runat="server" visible="false"><a href="../tcomb.aspx">Asignación de Plan de Cobro</a></li>
+                                                    <li id="trepc" runat="server" visible="false"><a href="../trepc.aspx">Reporte de Becas/Descuentos Asignados	</a></li>
+
+                                                </ul>
+                                            </li>
+                                            <li id="tedcu" runat="server"><a href="../tedcu.aspx">Cobros-Cuenta</a></li>
+                                            <li id="tdsap" runat="server"><a href="../tdsap.aspx">Desaplicar Pagos</a></li>
+                                            <li id="tcanc" runat="server"><a href="../tdsap.aspx">Cancelar Conceptos de Cartera</a></li>
+
+
+                                            <li id="tbanc" runat="server"><a href="../tbanc.aspx">Bancos</a></li>
+                                            <li id="asignacion" runat="server"><a href="#">Asignaci&oacute;n Alumnos</a></li>
+                                            <li id="reportes" runat="server"><a href="#">Reportes-Cierre</a></li>
+                                            <li id="cv" runat="server"><a href="../tcave.aspx">Reporte-Cartera Vencida</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="Tableros" runat="server"><a><i class="fas fa-cubes" style="padding-right: 5px;"></i>Tableros de Control<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="tprni" runat="server"><a href="../DashboardPronostico.aspx">Pronóstico Nuevo Ingreso</a></li>
+                                            <li id="tprri" runat="server"><a href="../Dashboard_RI.aspx">Pronóstico Reingreso</a></li>
+                                            <li id="ttade" runat="server"><a href="../Dashboard3.aspx">Becas/Descuentos</a></li>
+                                            <li id="ttave" runat="server"><a href="../Dashboard2.aspx">Cartera Vencida</a></li>
+                                            <li id="tacxc" runat="server"><a href="../Dashboard3.aspx">Cuentas por cobrar</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="Seguridad" runat="server"><a><i class="fas fa-lock" style="padding-right: 5px;"></i>Seguridad <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li id="trole" runat="server"><a href="../Trole.aspx">Cat&aacute;logo de Roles</a></li>
+                                            <li id="tuser" runat="server"><a href="../Tuser.aspx">Usuarios</a></li>
+                                            <li id="tmenu" runat="server"><a href="../Tmenu.aspx">Men&uacute;s</a></li>
+                                            <li id="tmede" runat="server"><a href="../Tmede.aspx">Opciones Men&uacute;</a></li>
+                                            <li id="tusme" runat="server"><a href="../Tusme.aspx">Accesos Men&uacute;</a></li>
+                                            <li id="tpreg" runat="server"><a href="../Tpreg.aspx">Preguntas Seguridad</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- /sidebar menu -->
+
+                        <!-- /menu footer buttons -->
+                        <div class="sidebar-footer hidden-small text-right">
+                            <%--<a data-toggle="tooltip" data-placement="top" title="" data-original-title="Settings">
+<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+</a>
+<a data-toggle="tooltip" data-placement="top" title="" data-original-title="FullScreen">
+<span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+</a>
+<a data-toggle="tooltip" data-placement="top" title="" data-original-title="Lock">
+<span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+</a>--%>
+                            <div class="sidebar-footer a"></div>
+                            <a data-toggle="tooltip" data-placement="top" title="" href="Default.aspx" data-original-title="Logout">
+                                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                        <!-- /menu footer buttons -->
+                    </div>
+                </div>
+
+                <!-- top navigation -->
+                <div class="top_nav">
+                    <div class="nav_menu">
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <nav class="navbar navbar-expand-lg  d-md-done navbar-light bg-gris">
+                            <ul class="col-md-9 text-center" style="padding-top: 15px">
+                                <h4>Sistema de Administraci&oacute;n Escolar-SAES</h4>
+
+                                <%--<span style="font-size: x-large; padding-left: 200px;" class="d-md-none">SAES</span>--%>
+
+                                <%-- <li class="nav-item dropdown open" style="padding-left: 15px;">
+                                    <span style="padding-right: 10px;">
+
+                                        |
+                                    </span>
+                                </li>--%>
+                            </ul>
+                            <form class="form-inline my-2 my-lg-0">
+                                <i class="fas fa-user fa-2x"></i>
+                                &nbsp;
+                                <asp:Label ID="nombre_1" runat="server" Text=""></asp:Label>
+                                &nbsp;| &nbsp;
+                                <asp:Label ID="perfil_1" runat="server" Text=""></asp:Label>
+                                &nbsp;| &nbsp;
+                                <%--<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">--%>
+                                <%--<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>--%>
+                                <asp:LinkButton ID="logout_btn" runat="server" OnClick="logout_btn_Click">
+                                    <i class="glyphicon glyphicon-off" aria-hidden="true""></i>
+<%--                                    <i class="fas fa-window-close" aria-hidden="true"></i>--%>
+
+                                </asp:LinkButton>
+
+                            </form>
+                        </nav>
+
+                    </div>
+                </div>
+                <!-- /top navigation -->
+
+                <!-- page content -->
+                <div class="right_col " role="main">
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12  ">
+
+                            <%--  <div class="x_panel">--%>
+                            <div class="x_content">
+
+                                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                                </asp:ContentPlaceHolder>
+
+                            </div>
+                            <%--</div>--%>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer>
+                <div class="pull-right">
+                    Derechos Reservados
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+
+        <!-- jQuery -->
+        <%--<script src="Template/Sitemaster/vendors/jquery/dist/jquery.min.js"></script>--%>
+        <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="../Template/Sitemaster/vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- FastClick -->
+        <script src="../Template/Sitemaster/vendors/fastclick/lib/fastclick.js"></script>
+        <!-- NProgress -->
+        <script src="../Template/Sitemaster/vendors/nprogress/nprogress.js"></script>
+
+        <!-- Custom Theme Scripts -->
+        <script src="../Template/Sitemaster/build/js/custom.min.js"></script>
+
+        <!-- Datatables -->
+        <script src="../Template/Sitemaster/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+        <script src="../Template/Sitemaster/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/jszip/dist/jszip.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/pdfmake/build/pdfmake.min.js"></script>
+        <script src="../Template/Sitemaster/vendors/pdfmake/build/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
+
+
+    </form>
+</body>
+</html>
+
