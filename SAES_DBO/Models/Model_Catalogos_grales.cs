@@ -7,55 +7,6 @@ using System.Threading.Tasks;
 
 namespace SAES_DBO.Models
 {
-
-
-
-
-
-
-    [SPName("P_QRY_TSTSO")]
-    public class ModelTstsoRequest : BaseModelRequest
-    {
-        [SPParameterName("P_Pais", 0)]
-        public string pais { get; set; }
-
-    }
-    public class ModelTstsoResponse : BaseModelResponse
-    {
-        [SPParameterName("clave", 0)]
-        public string clave { get; set; }
-
-        [SPParameterName("nombre", 1)]
-        public string nombre { get; set; }
-
-        [SPParameterName("c_estatus", 2)]
-        public string c_estatus { get; set; }
-
-        [SPParameterName("estatus", 3)]
-        public string estatus { get; set; }
-
-        [SPParameterName("fecha", 4)]
-        public string fecha { get; set; }
-    }
-
-    [SPName("P_INS_TDIRE")]
-    public class ModelInstdire : BaseModelRequest
-    {
-
-        [SPParameterName("Clave_tdire", 0)]
-        public string tdire_clave { get; set; }
-
-        [SPParameterName("Desc_tdire", 2)]
-        public string tdire_desc { get; set; }
-
-        [SPParameterName("Usuario", 3)]
-        public string tdire_user { get; set; }
-
-        [SPParameterName("Estatus", 4)]
-        public string tdire_estatus { get; set; }
-
-    }
-
     public class ModelInstdireResponse : BaseModelResponse
     {
         [SPResponseColumnName("Existe")]
@@ -243,35 +194,6 @@ namespace SAES_DBO.Models
 
     }
 
-    [SPName("P_QRY_TBANC")]
-    public class ModeltbancRequest : BaseModelRequest
-    {
-
-    }
-
-    public class ModeltbancResponse : BaseModelResponse
-    {
-        [SPResponseColumnName("CLAVE")]
-        public string clave { get; set; }
-        [SPResponseColumnName("NOMBRE")]
-        public string Nombre { get; set; }
-        [SPResponseColumnName("CODIGO")]
-        public string Codigo { get; set; }
-        [SPResponseColumnName("C_ESTATUS")]
-        public string C_ESTATUS { get; set; }
-        [SPResponseColumnName("ESTATUS")]
-        public string ESTATUS { get; set; }
-        [SPResponseColumnName("FECHA")]
-        public string Fecha { get; set; }
-
-        [SPResponseColumnName("tbanc_ruta_logo")]
-        public string ruta_logo { get; set; }
-
-        [SPResponseColumnName("tbanc_convenio")]
-        public string convenio { get; set; }
-
-    }
-
     [SPName("P_INS_TBANC")]
     public class ModelInstbanc : BaseModelRequest
     {
@@ -298,8 +220,6 @@ namespace SAES_DBO.Models
         public string tbanc_convenio { get; set; }
 
     }
-
-
 
     [SPName("P_INS_TSTSO")]
     public class ModelInsTstsc : BaseModelRequest
@@ -371,5 +291,401 @@ namespace SAES_DBO.Models
 
     }
 
-}
+    [SPName("P_QRY_TPAIS")]
+    public class ModelTpaisRequest : BaseModelRequest
+    {
+    }
 
+    public class ModelTpaisResponse : BaseModelResponse
+    {
+        [SPResponseColumnName("CLAVE")]
+        public string clave { get; set; }
+
+        [SPResponseColumnName("NOMBRE")]
+        public string nombre { get; set; }
+
+        [SPResponseColumnName("GENTIL")]
+        public string gentil { get; set; }
+
+        [SPResponseColumnName("ESTATUS_CODE")]
+        public string c_estatus { get; set; }
+
+        [SPResponseColumnName("ESTATUS")]
+        public string estatus { get; set; }
+
+        [SPResponseColumnName("FECHA")]
+        public string fecha { get; set; }
+    }
+    
+    [SPName("P_INS_TPAIS")]
+    public class ModelInsTpaisRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)]
+        public string clave { get; set; }
+        [SPParameterName("p_desc", 1)]
+        public string desc { get; set; }
+        [SPParameterName("p_gentil", 2)]
+        public string gentil { get; set; }
+        [SPParameterName("p_user", 3)]
+        public string user { get; set; }
+        [SPParameterName("p_estatus", 4)]
+        public string estatus { get; set; }
+    }
+
+    public class ModelInsTpaisResponse : BaseModelResponse
+    {
+        
+    }
+
+    [SPName("P_UPD_TPAIS")]
+    public class ModelUpdTpaisRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)]
+        public string clave { get; set; }
+        [SPParameterName("p_desc", 1)]
+        public string desc { get; set; }
+        [SPParameterName("p_gentil", 2)]
+        public string gentil { get; set; }
+        [SPParameterName("p_user", 3)]
+        public string user { get; set; }
+        [SPParameterName("p_estatus", 4)]
+        public string estatus { get; set; }
+    }
+
+    
+    [SPName("P_VAL_TPAIS")]
+    public class ModelValTpaisRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)]
+        public string clave { get; set; }
+    }
+
+    public class ModelValTpaisResponse : BaseModelResponse
+    {
+        [SPResponseColumnName("INDICADOR")]
+        public string indicador { get; set; }
+    }
+    
+    #region TESTA (Estados)
+    [SPName("P_QRY_TESTA")]
+    public class ModelTestaRequest : BaseModelRequest
+    {
+        [SPParameterName("p_tpais_clave", 0)]
+        public string tpais_clave { get; set; }
+    }
+
+    public class ModelTestaResponse : BaseModelResponse
+    {
+        [SPResponseColumnName("CLAVE")]
+        public string clave { get; set; }
+        [SPResponseColumnName("NOMBRE")]
+        public string nombre { get; set; }
+        [SPResponseColumnName("ESTATUS")]
+        public string estatus { get; set; }
+        [SPResponseColumnName("FECHA")]
+        public string fecha { get; set; }
+    }
+    #endregion
+
+    #region TSTSO (Estatus Socioeconómicos / Otros)
+    [SPName("P_QRY_TSTSO")]
+    public class ModelTstsoRequest : BaseModelRequest
+    {
+        [SPParameterName("P_Pais", 0)]
+        public string pais { get; set; }
+    }
+
+    public class ModelTstsoResponse : BaseModelResponse
+    {
+        // CORREGIDO: Usamos SPResponseColumnName para las respuestas
+        [SPResponseColumnName("CLAVE")]
+        public string clave { get; set; }
+        [SPResponseColumnName("NOMBRE")]
+        public string nombre { get; set; }
+        [SPResponseColumnName("C_ESTATUS")]
+        public string c_estatus { get; set; }
+        [SPResponseColumnName("ESTATUS")]
+        public string estatus { get; set; }
+        [SPResponseColumnName("FECHA")]
+        public string fecha { get; set; }
+    }
+    #endregion
+
+    #region Otros Modelos (Bancos, Direcciones, etc.)
+    [SPName("P_INS_TDIRE")]
+    public class ModelInstdire : BaseModelRequest
+    {
+        [SPParameterName("Clave_tdire", 0)]
+        public string tdire_clave { get; set; }
+        [SPParameterName("Desc_tdire", 2)]
+        public string tdire_desc { get; set; }
+        [SPParameterName("Usuario", 3)]
+        public string tdire_user { get; set; }
+        [SPParameterName("Estatus", 4)]
+        public string tdire_estatus { get; set; }
+    }
+
+    [SPName("P_QRY_TBANC")]
+    public class ModeltbancRequest : BaseModelRequest { }
+
+    public class ModeltbancResponse : BaseModelResponse
+    {
+        [SPResponseColumnName("CLAVE")]
+        public string clave { get; set; }
+        [SPResponseColumnName("NOMBRE")]
+        public string Nombre { get; set; }
+        [SPResponseColumnName("CODIGO")]
+        public string Codigo { get; set; }
+        [SPResponseColumnName("C_ESTATUS")]
+        public string C_ESTATUS { get; set; }
+        [SPResponseColumnName("ESTATUS")]
+        public string ESTATUS { get; set; }
+        [SPResponseColumnName("FECHA")]
+        public string Fecha { get; set; }
+        [SPResponseColumnName("tbanc_ruta_logo")]
+        public string ruta_logo { get; set; }
+        [SPResponseColumnName("tbanc_convenio")]
+        public string convenio { get; set; }
+    }
+
+    [SPName("P_INS_TESTA")]
+    public class ModelInsTestaRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)]
+        public string clave { get; set; }
+        
+        [SPParameterName("p_pais_clave", 1)]
+        public string pais_clave { get; set; }
+        
+        [SPParameterName("p_desc", 2)]
+        public string desc { get; set; }
+        
+        [SPParameterName("p_user", 3)]
+        public string user { get; set; }
+        
+        [SPParameterName("p_estatus", 4)]
+        public string estatus { get; set; }
+    }
+    
+    [SPName("P_UPD_TESTA")]
+    public class ModelUpdTestaRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)]
+        public string clave { get; set; }
+        
+        [SPParameterName("p_pais_clave", 1)]
+        public string pais_clave { get; set; }
+        
+        [SPParameterName("p_desc", 2)]
+        public string desc { get; set; }
+        
+        [SPParameterName("p_user", 3)]
+        public string user { get; set; }
+        
+        [SPParameterName("p_estatus", 4)]
+        public string estatus { get; set; }
+    }
+
+    [SPName("P_VAL_TESTA")]
+    public class ModelValTestaRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)]
+        public string clave { get; set; }
+
+        [SPParameterName("p_pais", 1)]
+        public string pais { get; set; }
+    }
+
+    public class ModelValTestaResponse : BaseModelResponse
+    {
+        [SPResponseColumnName("INDICADOR")]
+        public string indicador { get; set; }
+    }
+
+    [SPName("P_QRY_TESTA_POR_PAIS")]
+    public class ModelTestaComboRequest : BaseModelRequest
+    {
+        [SPParameterName("p_tpais_clave", 0)]
+        public string tpais_clave { get; set; }
+    }
+
+    public class ModelTestaComboResponse : BaseModelResponse
+    {
+        [SPResponseColumnName("CLAVE")]
+        public string clave { get; set; }
+        [SPResponseColumnName("NOMBRE")]
+        public string nombre { get; set; }
+    }
+
+    [SPName("P_QRY_TDELE")]
+    public class ModelTdeleRequest : BaseModelRequest
+    {
+        [SPParameterName("p_tpais_clave", 0)]
+        public string tpais_clave { get; set; }
+
+        [SPParameterName("p_testa_clave", 1)]
+        public string testa_clave { get; set; }
+    }
+
+    public class ModelTdeleResponse : BaseModelResponse
+    {
+        [SPResponseColumnName("CLAVE")]
+        public string clave { get; set; }
+        [SPResponseColumnName("NOMBRE")]
+        public string nombre { get; set; }
+        [SPResponseColumnName("ESTATUS")]
+        public string estatus { get; set; }
+        [SPResponseColumnName("FECHA")]
+        public string fecha { get; set; }
+    }
+
+    [SPName("P_INS_TDELE")]
+    public class ModelInsTdeleRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)]
+        public string clave { get; set; }
+        
+        [SPParameterName("p_desc", 1)]
+        public string desc { get; set; }
+        
+        [SPParameterName("p_estado_clave", 2)]
+        public string estado_clave { get; set; }
+        
+        [SPParameterName("p_pais_clave", 3)]
+        public string pais_clave { get; set; }
+        
+        [SPParameterName("p_user", 4)]
+        public string user { get; set; }
+        
+        [SPParameterName("p_estatus", 5)]
+        public string estatus { get; set; }
+    }
+
+    [SPName("P_UPD_TDELE")]
+    public class ModelUpdTdeleRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)]
+        public string clave { get; set; }
+        
+        [SPParameterName("p_desc", 1)]
+        public string desc { get; set; }
+        
+        [SPParameterName("p_estado_clave", 2)]
+        public string estado_clave { get; set; }
+        
+        [SPParameterName("p_pais_clave", 3)]
+        public string pais_clave { get; set; }
+        
+        [SPParameterName("p_user", 4)]
+        public string user { get; set; }
+        
+        [SPParameterName("p_estatus", 5)]
+        public string estatus { get; set; }
+    }
+
+    [SPName("P_VAL_TDELE")]
+    public class ModelValTdeleRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)]
+        public string clave { get; set; }
+
+        [SPParameterName("p_estado", 1)]
+        public string estado { get; set; }
+
+        [SPParameterName("p_pais", 2)]
+        public string pais { get; set; }
+    }
+
+    public class ModelValTdeleResponse : BaseModelResponse
+    {
+        [SPResponseColumnName("INDICADOR")]
+        public string indicador { get; set; }
+    }
+
+    [SPName("P_QRY_TDELE_COMBO")]
+    public class ModelTdeleComboRequest : BaseModelRequest
+    {
+        [SPParameterName("p_pais", 0)]
+        public string pais { get; set; }
+        [SPParameterName("p_estado", 1)]
+        public string estado { get; set; }
+    }
+
+    public class ModelTdeleComboResponse : BaseModelResponse
+    {
+        [SPResponseColumnName("CLAVE")]
+        public string clave { get; set; }
+        [SPResponseColumnName("NOMBRE")]
+        public string nombre { get; set; }
+    }
+
+    [SPName("P_QRY_TZIPS")]
+    public class ModelTzipRequest : BaseModelRequest
+    {
+        [SPParameterName("p_tpais", 0)]
+        public string tpais { get; set; }
+        [SPParameterName("p_testa", 1)]
+        public string testa { get; set; }
+        [SPParameterName("p_tdele", 2)]
+        public string tdele { get; set; }
+    }
+
+    public class ModelTzipResponse : BaseModelResponse
+    {
+        [SPResponseColumnName("CLAVE")] public string clave { get; set; }
+        [SPResponseColumnName("NOMBRE")] public string nombre { get; set; }
+        [SPResponseColumnName("C_PAIS")] public string c_pais { get; set; }
+        [SPResponseColumnName("PAIS")] public string pais { get; set; }
+        [SPResponseColumnName("C_ESTADO")] public string c_estado { get; set; }
+        [SPResponseColumnName("ESTADO")] public string estado { get; set; }
+        [SPResponseColumnName("C_DELEGACION")] public string c_delegacion { get; set; }
+        [SPResponseColumnName("DELEGACION")] public string delegacion { get; set; }
+        [SPResponseColumnName("ESTATUS_CODE")] public string estatus_code { get; set; }
+        [SPResponseColumnName("ESTATUS")] public string estatus { get; set; }
+        [SPResponseColumnName("FECHA")] public string fecha { get; set; }
+    }
+
+    [SPName("P_INS_TZIP")]
+    public class ModelInsTzipRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)] public string clave { get; set; }
+        [SPParameterName("p_desc", 1)] public string desc { get; set; }
+        [SPParameterName("p_pais", 2)] public string pais { get; set; }
+        [SPParameterName("p_estado", 3)] public string estado { get; set; }
+        [SPParameterName("p_dele", 4)] public string dele { get; set; }
+        [SPParameterName("p_user", 5)] public string user { get; set; }
+        [SPParameterName("p_estatus", 6)] public string estatus { get; set; }
+    }
+
+    [SPName("P_UPD_TZIP")]
+    public class ModelUpdTzipRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)] public string clave { get; set; }
+        [SPParameterName("p_desc", 1)] public string desc { get; set; }
+        [SPParameterName("p_pais", 2)] public string pais { get; set; }
+        [SPParameterName("p_estado", 3)] public string estado { get; set; }
+        [SPParameterName("p_dele", 4)] public string dele { get; set; }
+        [SPParameterName("p_user", 5)] public string user { get; set; }
+        [SPParameterName("p_estatus", 6)] public string estatus { get; set; }
+    }
+
+    [SPName("P_VAL_TZIP")]
+    public class ModelValTzipRequest : BaseModelRequest
+    {
+        [SPParameterName("p_clave", 0)] public string clave { get; set; }
+        [SPParameterName("p_pais", 1)] public string pais { get; set; }
+        [SPParameterName("p_estado", 2)] public string estado { get; set; }
+        [SPParameterName("p_dele", 3)] public string dele { get; set; }
+    }
+
+    public class ModelValTzipResponse : BaseModelResponse
+    {
+        [SPResponseColumnName("INDICADOR")]
+        public string indicador { get; set; }
+    }
+
+
+
+    #endregion
+
+}
