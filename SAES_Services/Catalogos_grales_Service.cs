@@ -314,5 +314,152 @@ namespace SAES_Services
             return false; 
         }
 
+        public DataTable QRY_TCAMP_GRID()
+        {
+            return DB.CallSPListResult<dynamic, dynamic>("P_QRY_TCAMP_GRID", null).ToDataTable(); 
+        }
+
+        public bool ValidarClaveCampus(string clave)
+        {
+            ModelValCampusRequest request = new ModelValCampusRequest { clave = clave };
+            var response = DB.CallSPListResult<ModelValCampusResponse, ModelValCampusRequest>(request);
+            if (response != null && response.Count > 0)
+            {
+                return response[0].indicador == "0";
+            }
+            return false;
+        }
+
+        public string InsertarCampus(ModelInsCampusRequest request)
+        {
+            return DB.CallSPForInsertUpdate<ModelInsCampusRequest>("P_INS_TCAMP", request);
+        }
+
+        public DataTable QRY_TCAMP_COMBO()
+        {
+            return DB.CallSPListResult<dynamic, dynamic>("P_QRY_TCAMP_COMBO", null).ToDataTable();
+        }
+
+        public DataTable QRY_TCAPR_GRID(string campus)
+        {
+            var request = new { p_campus = campus };
+            
+            return DB.CallSPListResult<dynamic, dynamic>("P_QRY_TCAPR_GRID", request).ToDataTable();
+        }
+
+        public bool ValidarClavePrograma(string clave)
+        {
+            var request = new { p_clave = clave };
+            var response = DB.CallSPListResult<ModelValCampusResponse, object>("P_VAL_TPROG_CLAVE", request);
+
+            if (response != null && response.Count > 0)
+            {
+                return response[0].indicador == "0";
+            }
+
+            return false;
+        }
+        
+        public string InsertarProgramaCampus(ModelInsProgCampusRequest request)
+        {
+            return DB.CallSPForInsertUpdate<ModelInsProgCampusRequest>("P_INS_TCAPR", request);
+        }
+
+        public string ActualizarProgramaCampus(ModelInsProgCampusRequest request)
+        {
+            return DB.CallSPForInsertUpdate<ModelInsProgCampusRequest>("P_UPD_TCAPR", request);
+        }
+        public string ObtenerNombrePrograma(string clave)
+        {
+            var request = new { p_clave = clave };
+            DataTable dt = DB.CallSPListResult<dynamic, dynamic>("P_QRY_TPROG_NOMBRE", request).ToDataTable();
+            
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                return dt.Rows[0]["Programa"].ToString();
+            }
+            
+            return string.Empty;
+        }
+
+        public DataTable QRY_TNIVE_COBRANZA(string campus)
+        {
+            var request = new { p_campus = campus };
+            return DB.CallSPListResult<dynamic, dynamic>("P_QRY_TNIVE_COBRANZA", request).ToDataTable();
+        }
+
+        public DataTable QRY_TIPO_PERIODO_COBRANZA()
+        {
+            return DB.CallSPListResult<dynamic, dynamic>("P_QRY_TIPO_PERIODO_COBRANZA", null).ToDataTable();
+        }
+
+        public DataTable QRY_TPEES_PERIODOS(string filtro)
+        {
+            var request = new { p_filtro = filtro };
+            return DB.CallSPListResult<dynamic, dynamic>("P_QRY_TPEES_PERIODOS", request).ToDataTable();
+        }
+        
+        public DataTable QRY_TCOCA_COMBO()
+        {
+            return DB.CallSPListResult<dynamic, dynamic>("P_QRY_TCOCA_COMBO", null).ToDataTable();
+        }
+
+        public DataTable QRY_TCOCO_COMBO()
+        {
+            return DB.CallSPListResult<dynamic, dynamic>("P_QRY_TCOCO_COMBO", null).ToDataTable();
+        }
+
+        public string InsertarParametrosCobranza(ModelInsCobranzaRequest request)
+        {
+            return DB.CallSPForInsertUpdate<ModelInsCobranzaRequest>("P_INS_TPACO_COBRANZA", request);
+        }
+
+        public string ActualizarParametrosCobranza(ModelInsCobranzaRequest request)
+        {
+            return DB.CallSPForInsertUpdate<ModelInsCobranzaRequest>("P_UPD_TPACO_COBRANZA", request);
+        }
+
+        public DataTable QRY_TPACO_GRID(string periodo, string campus, string nivel, string tipo_p)
+        {
+            var request = new { 
+                p_periodo = periodo, 
+                p_campus = campus, 
+                p_nivel = nivel, 
+                p_tipo_p = tipo_p 
+            };
+            
+            return DB.CallSPListResult<dynamic, dynamic>("P_QRY_TPACO_GRID", request).ToDataTable();
+        }
+
+        public bool ValidarPeriodoExiste(string periodo)
+        {
+            var request = new { p_periodo = periodo };
+            var response = DB.CallSPListResult<ModelValCampusResponse, object>("P_VAL_TPEES_PERIODO", request);
+
+            if (response != null && response.Count > 0)
+            {
+               return response[0].indicador == "0";
+            }
+            return false;
+        }
+
+        public bool ValidarConfiguracionCobranzaExiste(string periodo, string campus, string nivel, string tipo_per)
+        {
+            var request = new { 
+                p_periodo = periodo, 
+                p_campus = campus, 
+                p_nivel = nivel, 
+                p_tipo_per = tipo_per 
+            };
+            var response = DB.CallSPListResult<ModelValCampusResponse, object>("P_VAL_TPACO_EXISTE", request);
+
+            if (response != null && response.Count > 0)
+            {
+                return response[0].indicador == "0";
+            }
+            return false;
+        }
+    
+    
     }
 }

@@ -65,14 +65,18 @@ namespace SAES_v1
         {
             try
             {
-                DataTable dtPaises = serviceCat.QRY_TPAIS();
-                
-                util.BeginGrid(GridPaises, dtPaises);
+                GridPaises.DataSource = serviceCat.QRY_TPAIS();
+                GridPaises.DataBind();
+                if (GridPaises.Rows.Count > 0)
+                {
+                    GridPaises.HeaderRow.TableSection = TableRowSection.TableHeader;
+                    GridPaises.UseAccessibleHeader = true;
+                }
             }
             catch (Exception ex)
             {
                 string mensaje_error = ex.Message.Replace("'", "-");
-                Global.inserta_log(mensaje_error, "tpais", Session["usuario"].ToString());
+                Global.inserta_log(mensaje_error, "tpais", Session["usuario"]?.ToString() ?? "Sistema");
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "error_consulta", "error_consulta();", true);
             }
         }
@@ -220,14 +224,18 @@ namespace SAES_v1
         {
             try
             {
-                string filtroPais = cbo_pais.SelectedValue == "0" ? "" : cbo_pais.SelectedValue;
-                DataTable dtEstados = serviceCat.QRY_TESTA(filtroPais);
-                util.BeginGrid(GridEstados, dtEstados);
+                GridEstados.DataSource = serviceCat.QRY_TESTA(cbo_pais.SelectedValue);
+                GridEstados.DataBind();
+                if (GridEstados.Rows.Count > 0)
+                {
+                    GridEstados.HeaderRow.TableSection = TableRowSection.TableHeader;
+                    GridEstados.UseAccessibleHeader = true;
+                }
             }
             catch (Exception ex)
             {
                 string mensaje_error = ex.Message.Replace("'", "-");
-                Global.inserta_log(mensaje_error, "testa_bind", Session["usuario"].ToString());
+                Global.inserta_log(mensaje_error, "testa_bind", Session["usuario"]?.ToString() ?? "Sistema");
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "error_consulta", "error_consulta();", true);
             }
         }
@@ -483,15 +491,18 @@ namespace SAES_v1
         {
             try
             {
-                string filtroPais = cbop_deleg.SelectedValue == "0" ? "" : cbop_deleg.SelectedValue;
-                string filtroEstado = cboe_deleg.SelectedValue == "0" ? "" : cboe_deleg.SelectedValue;
-                DataTable dtDeleg = serviceCat.QRY_TDELE(filtroPais, filtroEstado);
-                util.BeginGrid(GridDelegacion, dtDeleg);
+                GridDelegacion.DataSource = serviceCat.QRY_TDELE(cbop_deleg.SelectedValue, cboe_deleg.SelectedValue);
+                GridDelegacion.DataBind();
+                if (GridDelegacion.Rows.Count > 0)
+                {
+                    GridDelegacion.HeaderRow.TableSection = TableRowSection.TableHeader;
+                    GridDelegacion.UseAccessibleHeader = true;
+                }
             }
             catch (Exception ex)
             {
                 string mensaje_error = ex.Message.Replace("'", "-");
-                Global.inserta_log(mensaje_error, "tdele_bind", Session["usuario"].ToString());
+                Global.inserta_log(mensaje_error, "tdele_bind", Session["usuario"]?.ToString() ?? "Sistema");
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "error_consulta", "error_consulta();", true);
             }
         }
@@ -725,17 +736,19 @@ namespace SAES_v1
         protected void grid_zip_bind()
         {
             try
-            {
-                string fPais = cbop_zip.SelectedValue == "0" ? "" : cbop_zip.SelectedValue;
-                string fEstado = cboe_zip.SelectedValue == "0" ? "" : cboe_zip.SelectedValue;
-                string fDele = cbod_zip.SelectedValue == "0" ? "" : cbod_zip.SelectedValue;
-                DataTable dtZip = serviceCat.QRY_TZIPS(fPais, fEstado, fDele);
-                util.BeginGrid(GridZip, dtZip);
+            {   
+                GridZip.DataSource = serviceCat.QRY_TZIPS(cbop_zip.SelectedValue, cboe_zip.SelectedValue, cbod_zip.SelectedValue);
+                GridZip.DataBind();
+                if (GridZip.Rows.Count > 0)
+                {
+                    GridZip.HeaderRow.TableSection = TableRowSection.TableHeader;
+                    GridZip.UseAccessibleHeader = true;
+                }
             }
             catch (Exception ex)
             {
-                string mensaje_error = ex.Message.Replace("'", "-");
-                Global.inserta_log(mensaje_error, "tzip_bind", Session["usuario"].ToString());
+                string mensaje_error = ex.Message.Replace("'", "-");                
+                Global.inserta_log(mensaje_error, "tzip_bind", Session["usuario"]?.ToString() ?? "Sistema");
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "error_consulta", "error_consulta();", true);
             }
         }

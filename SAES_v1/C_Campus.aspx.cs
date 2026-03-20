@@ -1,57 +1,61 @@
-﻿using MySql.Data.MySqlClient;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
+﻿using System.Data;using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
 
 namespace SAES_v1
 {
     public partial class C_Campus : System.Web.UI.Page
     {
-        
-        protected void Page_Load(object sender, EventArgs e)
+        Utilidades util = new Utilidades();
+        Catalogos_grales_Service serviceCat = new Catalogos_grales_Service();
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        // 1. Seguridad de sesión 
+        if (!HttpContext.Current.User.Identity.IsAuthenticated)
         {
-            if (!HttpContext.Current.User.Identity.IsAuthenticated)
-            {
-                Response.Redirect(FormsAuthentication.DefaultUrl);
-                Response.End();
-            }
-            else
-            {
-                if (!IsPostBack)
-                {
-                    //ScriptManager.RegisterStartupScript(this, this.GetType(), "show_tab", "show_pais();", true);
-                    form_Campus.Attributes.Add("style", "display:none");
-                    btn_campus.Attributes.Add("style", "display:none");
-                    combo_estatus();
-                    ///Llamado a combos pestaña campus///
-                    combo_pais();
-
-                    ///Llamado a combos pestaña Programa///
-                    combo_campus();
-                    c_prog_campus.Attributes.Add("onblur", "validarclavePrograma('ContentPlaceHolder1_c_prog_campus')");
-                    c_prog_campus.Attributes.Add("oninput", "validarclavePrograma('ContentPlaceHolder1_c_prog_campus')");
-                    update_prog.Attributes.Add("style", "display:none");
-                    btn_programa.Attributes.Add("style", "display:none");
-
-                    ///Llamado a combos pestaña cobranza///
-                    actualizar_cob.Attributes.Add("style", "display:none");
-                    dd_term.Attributes.Add("style", "display:none");
-                    combo_campus_cobranza();
-                    combo_tipo_periodo();
-                    combo_concepto_calendario();
-                    combo_concepto_cobranza();
-
-                }
-                grid_campus_bind();
-            }
+            Response.Redirect(FormsAuthentication.DefaultUrl);
+            Response.End();
         }
+        else
+        {
+            if (!IsPostBack)
+            {
+                // 2. Configuración visual inicial 
+                form_Campus.Attributes.Add("style", "display:none");
+                btn_campus.Attributes.Add("style", "display:none");
+                combo_estatus();
+                // 3. Carga de combos iniciales 
+                combo_pais(); 
+                combo_campus(); 
+
+                // 4. Atributos de validación del lado del cliente (JavaScript)
+                c_prog_campus.Attributes.Add("onblur", "validarclavePrograma('ContentPlaceHolder1_c_prog_campus')");
+                c_prog_campus.Attributes.Add("oninput", "validarclavePrograma('ContentPlaceHolder1_c_prog_campus')");
+                
+                update_prog.Attributes.Add("style", "display:none");
+                btn_programa.Attributes.Add("style", "display:none");
+
+                // 5. Configuración pestaña Cobranza
+                actualizar_cob.Attributes.Add("style", "display:none");
+                dd_term.Attributes.Add("style", "display:none");
+                
+                combo_campus_cobranza();
+                combo_tipo_periodo();
+                combo_concepto_calendario();
+                combo_concepto_cobranza();
+            }
+            grid_campus_bind();
+        }
+    }
 
 
         protected void combo_estatus()
@@ -63,308 +67,188 @@ namespace SAES_v1
             e_prog_campus.Items.Add(new ListItem("Activo", "A"));
             e_prog_campus.Items.Add(new ListItem("Inactivo", "B"));
         }
-        private DataTable GetData(MySqlCommand cmd)
-        {
-            DataTable dt = new DataTable();
-            String strConnString = System.Configuration.ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString;
-            MySqlConnection con = new MySqlConnection(strConnString);
-            MySqlDataAdapter sda = new MySqlDataAdapter();
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = con;
-            try
-            {
-                con.Open();
-                sda.SelectCommand = cmd;
-                sda.Fill(dt);
-                return dt;
-            }
-            catch
-            {
-                return null;
-            }
-            finally
-            {
-                con.Close();
-                sda.Dispose();
-                con.Dispose();
-            }
-        }
-
-        #region Métodos para pestañana de Campus
+            
+            #region Métodos para pestañana de Campus
 
         protected void combo_pais()
         {
-
-            dde_campus.Items.Clear();
-            dde_campus.Items.Add(new ListItem("----Selecciona un estado----", "0"));
-            ddd_campus.Items.Clear();
-            ddd_campus.Items.Add(new ListItem("----Selecciona una delegación---", "0"));
-            ddz_campus.Items.Clear();
-            ddz_campus.Items.Add(new ListItem("----Selecciona una código postal---", "0"));
-
-            string Query = "SELECT TPAIS_CLAVE Clave,TPAIS_DESC Nombre FROM TPAIS WHERE TPAIS_ESTATUS='A' " +
-                           "UNION " +
-                           "SELECT '0' Clave,'----Selecciona un país----' Nombre " +
-                           "ORDER BY 1";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            DataTable TablaEstado = new DataTable();
-            MySqlCommand ConsultaMySql = new MySqlCommand();
-            MySqlDataReader DatosMySql;
             try
             {
-                ConsultaMySql.Connection = ConexionMySql;
-                ConsultaMySql.CommandType = CommandType.Text;
-                ConsultaMySql.CommandText = Query;
-                DatosMySql = ConsultaMySql.ExecuteReader();
-                TablaEstado.Load(DatosMySql, LoadOption.OverwriteChanges);
+                // 1. Limpieza de cascada visual (Resetear combos dependientes)
+                dde_campus.Items.Clear();
+                dde_campus.Items.Add(new ListItem("----Selecciona un estado----", "0"));
+                
+                ddd_campus.Items.Clear();
+                ddd_campus.Items.Add(new ListItem("----Selecciona una delegación---", "0"));
+                
+                ddz_campus.Items.Clear();
+                ddz_campus.Items.Add(new ListItem("----Selecciona una código postal---", "0"));
 
-                ddp_campus.DataSource = TablaEstado;
+                // 2. Llamada al servicio que YA EXISTE (Reutilización de código)
+                // El SP 'P_QRY_TPAIS_COMBO' ya maneja el UNION con el 'Selecciona un país'
+                DataTable TablaPais = serviceCat.QRY_TPAIS_COMBO();
+
+                // 3. Vinculación al DropDownList (ddp_campus)
+                ddp_campus.DataSource = TablaPais;
                 ddp_campus.DataValueField = "Clave";
                 ddp_campus.DataTextField = "Nombre";
                 ddp_campus.DataBind();
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                // Registro de error centralizado en TLOGS
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "combo_pais_campus", Session["usuario"].ToString());
             }
         }
 
-        protected void combo_estado( string clave_pais)
+        protected void combo_estado(string clave_pais)
         {
-            string Query = "SELECT TESTA_CLAVE Clave,TESTA_DESC Nombre FROM TESTA WHERE TESTA_ESTATUS='A' AND TESTA_TPAIS_CLAVE= " + clave_pais +
-                           " UNION " +
-                           "SELECT '0' Clave,'----Selecciona un estado----' Nombre " +
-                           "ORDER BY 1";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            DataTable TablaEstado = new DataTable();
-            MySqlCommand ConsultaMySql = new MySqlCommand();
-            MySqlDataReader DatosMySql;
             try
             {
-                ConsultaMySql.Connection = ConexionMySql;
-                ConsultaMySql.CommandType = CommandType.Text;
-                ConsultaMySql.CommandText = Query;
-                DatosMySql = ConsultaMySql.ExecuteReader();
-                TablaEstado.Load(DatosMySql, LoadOption.OverwriteChanges);
+                // 1. Limpieza de combos hijos (Cascada)
+                ddd_campus.Items.Clear();
+                ddd_campus.Items.Add(new ListItem("----Selecciona una delegación---", "0"));
+                
+                ddz_campus.Items.Clear();
+                ddz_campus.Items.Add(new ListItem("----Selecciona una código postal---", "0"));
 
+                // 2. Llamada al servicio centralizado
+                // Pasamos la 'clave_pais' al método que ya creamos anteriormente
+                DataTable TablaEstado = serviceCat.QRY_TESTA_COMBO(clave_pais);
+
+                // 3. Vinculación al control dde_campus
                 dde_campus.DataSource = TablaEstado;
                 dde_campus.DataValueField = "Clave";
                 dde_campus.DataTextField = "Nombre";
                 dde_campus.DataBind();
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                // Registro de error estandarizado
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "combo_estado_campus", Session["usuario"].ToString());
             }
         }
 
-        protected void combo_delegacion(string clave_pais,string clave_edo)
+        protected void combo_delegacion(string clave_pais, string clave_edo)
         {
-            string Query = "SELECT tdele_clave CLAVE,tdele_desc NOMBRE FROM TDELE WHERE tdele_tpais_clave='" + clave_pais + "' AND tdele_testa_clave='" + clave_edo + "' " +
-                           "UNION " +
-                           "SELECT '0' CLAVE,'----Selecciona una delegación----' NOMBRE " +
-                           "ORDER BY 1";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            DataTable TablaEstado = new DataTable();
-            MySqlCommand ConsultaMySql = new MySqlCommand();
-            MySqlDataReader DatosMySql;
             try
             {
-                ConsultaMySql.Connection = ConexionMySql;
-                ConsultaMySql.CommandType = CommandType.Text;
-                ConsultaMySql.CommandText = Query;
-                DatosMySql = ConsultaMySql.ExecuteReader();
-                TablaEstado.Load(DatosMySql, LoadOption.OverwriteChanges);
+                // 1. Limpieza del último nivel (Código Postal)
+                ddz_campus.Items.Clear();
+                ddz_campus.Items.Add(new ListItem("----Selecciona una código postal---", "0"));
 
-                ddd_campus.DataSource = TablaEstado;
+                // 2. Llamada al servicio centralizado con doble parámetro
+                // Reutilizamos el SP que ya filtra por País y Estado
+                DataTable TablaDele = serviceCat.QRY_TDELE_COMBO(clave_pais, clave_edo);
+
+                // 3. Vinculación al control ddd_campus
+                ddd_campus.DataSource = TablaDele;
                 ddd_campus.DataValueField = "Clave";
                 ddd_campus.DataTextField = "Nombre";
                 ddd_campus.DataBind();
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                // Registro de error estandarizado para auditoría
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "combo_dele_campus", Session["usuario"].ToString());
             }
         }
 
-        protected void combo_zip(string clave_pais, string clave_edo,string clave_deleg)
+        protected void combo_zip(string clave_pais, string clave_edo, string clave_deleg)
         {
-            string Query = "SELECT DISTINCT ROW_NUMBER() OVER (PARTITION BY tcopo_clave,tcopo_tpais_clave,tcopo_testa_clave,tcopo_tdele_clave ORDER BY tcopo_clave) Clave, tcopo_desc Nombre FROM tcopo WHERE tcopo_tpais_clave='" + clave_pais+"' AND tcopo_testa_clave='"+clave_edo+"' AND tcopo_tdele_clave='"+clave_deleg+"' AND tcopo_clave='"+zip_campus.Text+"' "+
-                            "UNION " +
-                            "SELECT '0' CLAVE,'----Selecciona una código postal----' NOMBRE " +
-                            "ORDER BY 1";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            DataTable TablaEstado = new DataTable();
-            MySqlCommand ConsultaMySql = new MySqlCommand();
-            MySqlDataReader DatosMySql;
             try
             {
-                ConsultaMySql.Connection = ConexionMySql;
-                ConsultaMySql.CommandType = CommandType.Text;
-                ConsultaMySql.CommandText = Query;
-                DatosMySql = ConsultaMySql.ExecuteReader();
-                TablaEstado.Load(DatosMySql, LoadOption.OverwriteChanges);
-
-                ddz_campus.DataSource = TablaEstado;
+                DataTable TablaZip = serviceCat.QRY_TZIPS_COMBO(clave_pais, clave_edo, clave_deleg, zip_texto);
+                ddz_campus.DataSource = TablaZip;
                 ddz_campus.DataValueField = "Clave";
                 ddz_campus.DataTextField = "Nombre";
                 ddz_campus.DataBind();
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "combo_zip_campus", Session["usuario"].ToString());
             }
         }
 
         protected void grid_campus_bind()
         {
-            string Query = "";
-            Query = "SELECT DISTINCT  tcamp_clave Clave, tcamp_desc Nombre, tcamp_abr Abreviatura,tcamp_rfc RFC,tcamp_estatus Estatus_Code, "+
-                    "CASE WHEN tcamp_estatus = 'A' THEN 'ACTIVO' ELSE 'INACTIVO' END Estatus, DATE_FORMAT(tcamp_date, '%d/%m/%Y') Fecha, " +
-                    "tcamp_tpais_clave C_Pais, tcamp_testa_clave C_Estado,testa_desc N_Estado, tcamp_tdele_clave C_Dele,tdele_desc N_Dele, tcamp_tcopo_clave ZIP,tcamp_colonia Colonia, tcamp_calle Direccion " +
-                        "FROM tcamp " +
-                        "INNER JOIN testa ON testa_clave = tcamp_testa_clave AND testa_tpais_clave = tcamp_tpais_clave " +
-                    "INNER JOIN tdele ON tdele_clave = tcamp_tdele_clave AND tdele_testa_clave = tcamp_testa_clave AND tdele_tpais_clave = tcamp_tpais_clave " +
-                    "ORDER BY 1";
             try
             {
-                MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-                ConexionMySql.Open();
-                MySqlDataAdapter dataadapter = new MySqlDataAdapter(Query, ConexionMySql);
-                DataSet ds = new DataSet();
-                dataadapter.Fill(ds, "Campus");
-                GridCampus.DataSource = ds;
+                GridCampus.DataSource = serviceCat.QRY_TCAMP_GRID();
                 GridCampus.EditIndex = -1;
                 GridCampus.DataBind();
-                GridCampus.DataMember = "Campus";
-                GridCampus.HeaderRow.TableSection = TableRowSection.TableHeader;
-                GridCampus.UseAccessibleHeader = true;
-
-
+                if (GridCampus.Rows.Count > 0)
+                {
+                    GridCampus.HeaderRow.TableSection = TableRowSection.TableHeader;
+                    GridCampus.UseAccessibleHeader = true;
+                }
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "grid_campus_bind", Session["usuario"]?.ToString() ?? "Sistema");
             }
-
         }
 
         protected bool validar_clave_campus(string clave)
         {
-            string Query = "";
-            Query = "SELECT COUNT(*) Indicador FROM tcamp WHERE tcamp_clave='" + clave + "'";
-            MySqlCommand cmd = new MySqlCommand(Query);
-            DataTable dt = GetData(cmd);
-            if (dt.Rows[0]["Indicador"].ToString() != "0")
+            try
             {
-                return false;
+               return serviceCat.ValidarClaveCampus(clave);
             }
-            else
+            catch (Exception ex)
             {
-                return true;
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "validar_clave_campus", Session["usuario"]?.ToString() ?? "Sistema");
+                return false;
             }
         }
 
         protected void insertar_campus()
         {
-
-            if (valida_clave(c_campus.Value))
-            {
-                string Query = "INSERT INTO tcamp Values ('" + c_campus.Value + "','" + n_campus.Value+ "','" +
-                                 direc_campus.Value + "','" + ddz_campus.SelectedItem.Text + "','" + ddp_campus.SelectedValue + "','" +
-                                 dde_campus.SelectedValue + "','" + ddd_campus.SelectedValue + "','" +
-                                 zip_campus.Text + "','" + Session["usuario"].ToString() + "',current_timestamp(),'" + estatus_campus.SelectedValue + "','" + a_campus.Value + "','" + RFC_campus.Value + "')";
-                MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-                ConexionMySql.Open();
-                MySqlCommand mysqlcmd = new MySqlCommand(Query, ConexionMySql);
-                mysqlcmd.CommandType = CommandType.Text;
-                try
-                {
-                    mysqlcmd.ExecuteNonQuery();
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "Guardar", "save();", true);
-                }
-                catch (Exception ex)
-                {
-                    string test = ex.Message;
-                }
-                finally
-                {
-                    ConexionMySql.Close();
-                }
-
-            }
-            else
-            {
-                
-            }
-        }
-        protected bool valida_clave(string clave)
-        {
-            string Query = "";
-            Query = "SELECT COUNT(*) Indicador FROM tcamp WHERE tcamp_clave='" + clave + "'";
-            MySqlCommand cmd = new MySqlCommand(Query);
-            DataTable dt = GetData(cmd);
-            if (dt.Rows[0]["Indicador"].ToString() != "0")
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-
-        }
-        protected void actualizar_campus_db()
-        {
-            string colonia = "";
-            string estado = "";
-            string delegacion = "";
-            if (ddz_campus.SelectedValue == "0") { colonia = hd_ddz_campus.Value; } else { colonia = ddz_campus.SelectedItem.Text; }
-            if (dde_campus.SelectedValue == "0") { estado = hd_dde_campus.Value; } else { estado = dde_campus.SelectedValue; }
-            if (ddd_campus.SelectedValue == "0") { delegacion = hd_ddd_campus.Value; } else { delegacion = ddd_campus.SelectedValue; }
-            string Query = "UPDATE tcamp SET tcamp_desc='"+n_campus.Value+"',tcamp_calle='"+direc_campus.Value+"',tcamp_colonia='"+colonia+"',tcamp_tpais_clave='"+ddp_campus.SelectedValue+"',tcamp_testa_clave='"+estado+"',tcamp_tdele_clave='"+delegacion+"',tcamp_tcopo_clave='"+zip_campus.Text+"',tcamp_user='"+ Session["usuario"].ToString() + "',tcamp_date=current_timestamp(),tcamp_estatus='"+estatus_campus.SelectedValue+"',tcamp_abr='"+a_campus.Value+"',tcamp_rfc='"+RFC_campus.Value+"' WHERE tcamp_clave='"+c_campus.Value+"'";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            MySqlCommand mysqlcmd = new MySqlCommand(Query, ConexionMySql);
-            mysqlcmd.CommandType = CommandType.Text;
             try
             {
-                mysqlcmd.ExecuteNonQuery();
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "update_p", "update();", true);
+                if (validar_clave_campus(c_campus.Value))
+                {
+                    ModelInsCampusRequest request = new ModelInsCampusRequest
+                    {
+                        p_clave = c_campus.Value,
+                        p_nombre = n_campus.Value,
+                        p_direccion = direc_campus.Value,
+                        p_colonia = ddz_campus.SelectedItem.Text,
+                        p_pais = ddp_campus.SelectedValue,
+                        p_estado = dde_campus.SelectedValue,
+                        p_dele = ddd_campus.SelectedValue,
+                        p_zip = zip_campus.Text,
+                        p_user = Session["usuario"].ToString(),
+                        p_estatus = estatus_campus.SelectedValue,
+                        p_abr = a_campus.Value,
+                        p_rfc = RFC_campus.Value
+                    };
+
+                    string respuesta = serviceCat.InsertarCampus(request);
+
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "Guardar", "save();", true);
+                    
+                    grid_campus_bind();
+                }
+                else
+                {
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "Error", "alert('La clave del campus ya existe');", true);
+                }
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "insertar_campus", Session["usuario"].ToString());
             }
         }
+        #endregion
+       
 
         protected void ddp_campus_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -442,222 +326,218 @@ namespace SAES_v1
                 dde_campus.SelectedValue = hd_dde_campus.Value;
                 combo_delegacion(hd_ddp_campus.Value, hd_dde_campus.Value);
                 ddd_campus.SelectedValue = hd_ddd_campus.Value;
+
                 combo_zip(hd_ddp_campus.Value, hd_dde_campus.Value, hd_ddd_campus.Value);
-                ddz_campus.SelectedItem.Text = hd_ddz_campus.Value;
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "", "validar_campos_campus();", true);
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "update_campus", "update_campus();", true);
+                if (ddz_campus.Items.FindByValue(hd_ddz_campus.Value) != null)
+                {
+                    ddz_campus.SelectedValue = hd_ddz_campus.Value;
+                }
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ValidaCampos", "validar_campos_campus();", true);
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "MantieneModal", "update_campus();", true);
             }
-            
         }
-        #endregion
 
         #region Métodos para la pestaña de Programas
 
         protected void combo_campus()
         {
-            string Query = "SELECT DISTINCT tcamp_clave Clave, tcamp_desc Campus FROM tcamp "+
-                            "UNION " +
-                            "SELECT DISTINCT '0','----Selecciona un Campus----' Campus  " +
-                            "ORDER BY 1";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            DataTable TablaCampus = new DataTable();
-            MySqlCommand ConsultaMySql = new MySqlCommand();
-            MySqlDataReader DatosMySql;
             try
             {
-                ConsultaMySql.Connection = ConexionMySql;
-                ConsultaMySql.CommandType = CommandType.Text;
-                ConsultaMySql.CommandText = Query;
-                DatosMySql = ConsultaMySql.ExecuteReader();
-                TablaCampus.Load(DatosMySql, LoadOption.OverwriteChanges);
-                search_campus.DataSource = TablaCampus;
+                search_campus.DataSource = serviceCat.QRY_TCAMP_COMBO();
                 search_campus.DataValueField = "Clave";
                 search_campus.DataTextField = "Campus";
                 search_campus.DataBind();
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "combo_campus_programas", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
 
         protected void grid_programas_bind(string campus)
         {
-            string Query = "";
-            Query = "SELECT tcapr_tprog_clave Clave,tprog_desc Nombre,tnive_desc Nivel, tmoda_desc Modalidad, tcapr_ind_admi Admision,tcapr_estatus Estatus_code, " +
-                    "CASE WHEN tcapr_estatus = 'A' THEN 'ACTIVO' ELSE 'INACTIVO' END Estatus, DATE_FORMAT(tcapr_date, '%d/%m/%Y') Fecha " +
-                    "FROM tcapr " +
-                    "INNER JOIN tprog ON tprog_clave = tcapr_tprog_clave " +
-                    "INNER JOIN tnive ON tnive_clave = tprog_tnive_clave " +
-                    "INNER JOIN tmoda ON tmoda_clave = tprog_tmoda_clave " +
-                    "WHERE tcapr_tcamp_clave = '"+campus+"' " +
-                    "ORDER BY 1";
             try
             {
-                MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-                ConexionMySql.Open();
-                MySqlDataAdapter dataadapter = new MySqlDataAdapter(Query, ConexionMySql);
-                DataSet ds = new DataSet();
-                dataadapter.Fill(ds, "Programas");
-                GridProgramas.DataSource = ds;
+                GridProgramas.DataSource = serviceCat.QRY_TCAPR_GRID(campus);
                 GridProgramas.EditIndex = -1;
                 GridProgramas.DataBind();
-                GridProgramas.DataMember = "Programas";
-                GridProgramas.HeaderRow.TableSection = TableRowSection.TableHeader;
-                GridProgramas.UseAccessibleHeader = true;
+                if (GridProgramas.Rows.Count > 0)
+                {
+                    GridProgramas.HeaderRow.TableSection = TableRowSection.TableHeader;
+                    GridProgramas.UseAccessibleHeader = true;
+                }
+                
                 GridProgramas.Visible = true;
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "grid_programas_bind", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
 
         protected bool validar_clave_programa(string clave)
         {
-            string Query = "";
-            Query = "SELECT COUNT(*) Indicador FROM tprog WHERE tprog_clave='" + clave + "'";
-            MySqlCommand cmd = new MySqlCommand(Query);
-            DataTable dt = GetData(cmd);
-            if (dt.Rows[0]["Indicador"].ToString() != "0")
+            try
             {
-                return false;
+                return serviceCat.ValidarClavePrograma(clave);
             }
-            else
+            catch (Exception ex)
             {
-                return true;
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "validar_clave_programa", Session["usuario"]?.ToString() ?? "Sistema");
+                return false;
             }
         }
 
         protected void insertar_programa_c()
         {
-            string admision = "";
-            if (Page.Request.Form["customSwitches"].ToString() == "on") { admision = "S"; } else { admision = "N"; }
-            string Query = "INSERT INTO tcapr Values ('" + search_campus.SelectedValue + "','" + c_prog_campus.Text + "','" + admision + "','" + Session["usuario"].ToString() + "',  current_timestamp() ,'" + e_prog_campus.SelectedValue + "')";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            MySqlCommand mysqlcmd = new MySqlCommand(Query, ConexionMySql);
-            mysqlcmd.CommandType = CommandType.Text;
             try
             {
-                mysqlcmd.ExecuteNonQuery();
+               string admision = (Page.Request.Form["customSwitches"] == "on") ? "S" : "N";
+                ModelInsProgCampusRequest request = new ModelInsProgCampusRequest
+                {
+                    p_campus = search_campus.SelectedValue,
+                    p_programa = c_prog_campus.Text.Trim(),
+                    p_admision = admision,
+                    p_user = Session["usuario"]?.ToString() ?? "Sistema",
+                    p_estatus = e_prog_campus.SelectedValue
+                };
+                serviceCat.InsertarProgramaCampus(request);
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "Guardar", "save();", true);
+                grid_programas_bind(search_campus.SelectedValue);
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "insertar_programa_c", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
 
         protected void actualizar_programa_c()
         {
-            
-            string admision = "";
-            if (Page.Request.Form["customSwitches"].ToString() == "on") { admision = "S"; } else { admision = "N"; }
-            string Query = "UPDATE tcapr SET tcapr_ind_admi='" + admision + "',tcapr_estatus='" + e_prog_campus.SelectedValue + "',tcapr_date= current_timestamp(),tcapr_tuser_clave='" + Session["usuario"].ToString() + "' WHERE tcapr_tcamp_clave='" + search_campus.SelectedValue + "' AND tcapr_tprog_clave='" + c_prog_campus.Text + "'";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            MySqlCommand mysqlcmd = new MySqlCommand(Query, ConexionMySql);
-            mysqlcmd.CommandType = CommandType.Text;
             try
             {
-                mysqlcmd.ExecuteNonQuery();
+                string admision = (Page.Request.Form["customSwitches"] == "on") ? "S" : "N";
+                ModelInsProgCampusRequest request = new ModelInsProgCampusRequest
+                {
+                    p_campus = search_campus.SelectedValue,
+                    p_programa = c_prog_campus.Text.Trim(),
+                    p_admision = admision,
+                    p_user = Session["usuario"]?.ToString() ?? "Sistema",
+                    p_estatus = e_prog_campus.SelectedValue
+                };
+                serviceCat.ActualizarProgramaCampus(request);
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "update_p", "update();", true);
+                grid_programas_bind(search_campus.SelectedValue);
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "actualizar_programa_c", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
 
         protected void search_campus_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (search_campus.SelectedValue != "0")
+            try
             {
-                c_prog_campus.Text = null;
-                n_prog_campus.Text = null;
-                grid_programas_bind(search_campus.SelectedValue);
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable", "load_datatable();", true);
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "", "btn_programa();", true);
+                if (search_campus.SelectedValue != "0")
+                {
+                    c_prog_campus.Text = string.Empty;
+                    n_prog_campus.Text = string.Empty;
+                    grid_programas_bind(search_campus.SelectedValue);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable", "load_datatable();", true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "mostrar_btn", "btn_programa();", true);
+                }
+                else
+                {
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "btn_ocultar", "btn_programa_ocultar();", true);
+                    GridProgramas.Visible = false;
+                }
             }
-            else
-            {                
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "btn_ocultar", "btn_programa_ocultar();", true);
+            catch (Exception ex)
+            {
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "search_campus_changed", Session["usuario"]?.ToString() ?? "Sistema");
             }
-            
         }
         protected void c_prog_campus_TextChanged(object sender, EventArgs e)
         {
-            if (!validar_clave_programa(c_prog_campus.Text))
+            try
             {
-                string Query = "SELECT DISTINCT tprog_desc Programa FROM tprog WHERE tprog_clave='" + c_prog_campus.Text + "'";
-                MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-
-                ConexionMySql.Open();
-                MySqlDataAdapter mysqladapter = new MySqlDataAdapter();
-                DataSet dsmysql = new DataSet();
-                MySqlCommand cmdmysql = new MySqlCommand(Query, ConexionMySql);
-                mysqladapter.SelectCommand = cmdmysql;
-                mysqladapter.Fill(dsmysql);
-                mysqladapter.Dispose();
-                cmdmysql.Dispose();
-                ConexionMySql.Close();
-                n_prog_campus.Text = dsmysql.Tables[0].Rows[0][0].ToString();
+                string clave = c_prog_campus.Text.Trim();
+                if (!validar_clave_programa(clave))
+                {
+                    n_prog_campus.Text = serviceCat.ObtenerNombrePrograma(clave);
+                }
+                else
+                {
+                    n_prog_campus.Text = string.Empty;
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "validar_clave", "validarclavePrograma_N('ContentPlaceHolder1_c_prog_campus',1);", true);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                n_prog_campus.Text = null;
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "validar_clave", "validarclavePrograma_N('ContentPlaceHolder1_c_prog_campus',1);", true);
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "c_prog_campus_changed", Session["usuario"]?.ToString() ?? "Sistema");
             }
-
-
         }
 
         protected void guardar_prog_Click(object sender, EventArgs e)
         {
-            if (!String.IsNullOrEmpty(c_prog_campus.Text))
+            try
             {
-                insertar_programa_c();
+                if (!String.IsNullOrEmpty(c_prog_campus.Text.Trim()))
+                {
+                    insertar_programa_c();
+                }
+                else
+                {
+                    grid_programas_bind(search_campus.SelectedValue);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable", "load_datatable();", true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "mostrar_btn", "btn_programa();", true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "validar_clave", "validarclavePrograma('ContentPlaceHolder1_c_prog_campus');", true);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                grid_programas_bind(search_campus.SelectedValue);
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable", "load_datatable();", true);
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "", "btn_programa();", true);
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "validar_clave", "validarclavePrograma('ContentPlaceHolder1_c_prog_campus');", true);
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "guardar_prog_click", Session["usuario"]?.ToString() ?? "Sistema");
             }
-            
         }
 
         protected void update_prog_Click(object sender, EventArgs e)
         {
-            
-            actualizar_programa_c();
+            try
+            {
+                actualizar_programa_c();
+            }
+            catch (Exception ex)
+            {
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "update_prog_click", Session["usuario"]?.ToString() ?? "Sistema");
+            }
         }
 
         protected void cancelar_prog_Click(object sender, EventArgs e)
         {
-            c_prog_campus.Text = null;
-            n_prog_campus.Text = null;
-            grid_programas_bind(search_campus.SelectedValue);
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable", "load_datatable();", true);
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "", "btn_programa();", true);
+            try
+            {
+                c_prog_campus.Text = string.Empty;
+                n_prog_campus.Text = string.Empty;
+                grid_programas_bind(search_campus.SelectedValue);
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable", "load_datatable();", true);
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "reset_btn", "btn_programa();", true);
+            }
+            catch (Exception ex)
+            {
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "cancelar_prog_click", Session["usuario"]?.ToString() ?? "Sistema");
+            }
         }
+
         #endregion
 
         #region Métodos para la pestaña de cobranza
@@ -665,427 +545,369 @@ namespace SAES_v1
 
         protected void combo_campus_cobranza()
         {
-            cobranza_n.Items.Clear();
-            cobranza_n.Items.Add(new ListItem("----Selecciona un Nivel----", "0"));
-
-            string Query = "SELECT DISTINCT tcamp_clave Clave, tcamp_desc Campus FROM tcamp " +
-                            "UNION " +
-                            "SELECT DISTINCT '0','----Selecciona un Campus----' Campus  " +
-                            "ORDER BY 1";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            DataTable TablaCampus = new DataTable();
-            MySqlCommand ConsultaMySql = new MySqlCommand();
-            MySqlDataReader DatosMySql;
             try
             {
-                ConsultaMySql.Connection = ConexionMySql;
-                ConsultaMySql.CommandType = CommandType.Text;
-                ConsultaMySql.CommandText = Query;
-                DatosMySql = ConsultaMySql.ExecuteReader();
-                TablaCampus.Load(DatosMySql, LoadOption.OverwriteChanges);
-                cobranza_c.DataSource = TablaCampus;
+                cobranza_n.Items.Clear();
+                cobranza_n.Items.Add(new ListItem("----Selecciona un Nivel----", "0"));
+                cobranza_c.DataSource = serviceCat.QRY_TCAMP_COMBO();
                 cobranza_c.DataValueField = "Clave";
                 cobranza_c.DataTextField = "Campus";
                 cobranza_c.DataBind();
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "combo_campus_cobranza", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
         
         protected void combo_nivel_cobranza(string campus)
         {
-            cobranza_n.Items.Clear();
-            string Query = "SELECT DISTINCT tprog_tnive_clave clave, tnive_desc nivel FROM tcapr, tnive, tprog WHERE tcapr_estatus='A' AND tcapr_tcamp_clave='"+campus+"' AND tcapr_tprog_clave=tprog_clave AND tprog_tnive_clave=tnive_clave  " +
-                           "UNION " +
-                           "SELECT DISTINCT '0','----Selecciona un Nivel----' Campus  " +
-                           "ORDER BY 1";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            DataTable TablaCampus = new DataTable();
-            MySqlCommand ConsultaMySql = new MySqlCommand();
-            MySqlDataReader DatosMySql;
             try
             {
-                ConsultaMySql.Connection = ConexionMySql;
-                ConsultaMySql.CommandType = CommandType.Text;
-                ConsultaMySql.CommandText = Query;
-                DatosMySql = ConsultaMySql.ExecuteReader();
-                TablaCampus.Load(DatosMySql, LoadOption.OverwriteChanges);
-                cobranza_n.DataSource = TablaCampus;
-                cobranza_n.DataValueField = "Clave";
-                cobranza_n.DataTextField = "Nivel";
+                cobranza_n.Items.Clear();
+                cobranza_n.DataSource = serviceCat.QRY_TNIVE_COBRANZA(campus);
+                cobranza_n.DataValueField = "clave";
+                cobranza_n.DataTextField = "nivel";
                 cobranza_n.DataBind();
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "combo_nivel_cobranza", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
 
         protected void combo_tipo_periodo()
         {
-            cobranza_tipo_p.Items.Clear();
-            string Query = "SELECT '01' clave, 'ANTICIPADO' tipo_per "+
-                            "UNION " +
-                            "SELECT '02' clave, 'REGULAR' tipo_per " +
-                            "UNION " +
-                            "SELECT '03' clave, 'EXTEMPORANEO' tipo_per " +
-                           "UNION " +
-                           "SELECT DISTINCT '0' clave,'----Selecciona un Tipo de Periodo----' tipo_per  " +
-                           "ORDER BY 1";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            DataTable TablaCampus = new DataTable();
-            MySqlCommand ConsultaMySql = new MySqlCommand();
-            MySqlDataReader DatosMySql;
             try
             {
-                ConsultaMySql.Connection = ConexionMySql;
-                ConsultaMySql.CommandType = CommandType.Text;
-                ConsultaMySql.CommandText = Query;
-                DatosMySql = ConsultaMySql.ExecuteReader();
-                TablaCampus.Load(DatosMySql, LoadOption.OverwriteChanges);
-                cobranza_tipo_p.DataSource = TablaCampus;
-                cobranza_tipo_p.DataValueField = "Clave";
+                cobranza_tipo_p.Items.Clear();
+                cobranza_tipo_p.DataSource = serviceCat.QRY_TIPO_PERIODO_COBRANZA();
+                cobranza_tipo_p.DataValueField = "clave";
                 cobranza_tipo_p.DataTextField = "tipo_per";
                 cobranza_tipo_p.DataBind();
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "combo_tipo_periodo_cob", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
         
         protected void combo_periodos()
         {
-            string Query = "SELECT DISTINCT tpees_clave Clave,CONCAT(tpees_clave,'-',tpees_desc) Periodo FROM tpees WHERE tpees_clave like '" + cobranza_p.Text + "%' " +
-                           "UNION " +
-                           "SELECT DISTINCT '0','' Periodo  " +
-                           "ORDER BY 1";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            DataTable TablaCampus = new DataTable();
-            MySqlCommand ConsultaMySql = new MySqlCommand();
-            MySqlDataReader DatosMySql;
             try
             {
-                ConsultaMySql.Connection = ConexionMySql;
-                ConsultaMySql.CommandType = CommandType.Text;
-                ConsultaMySql.CommandText = Query;
-                DatosMySql = ConsultaMySql.ExecuteReader();
-                TablaCampus.Load(DatosMySql, LoadOption.OverwriteChanges);
-                dd_periodo.DataSource = TablaCampus;
+                // Asignación Directa: Pasamos el texto del buscador al servicio
+                dd_periodo.DataSource = serviceCat.QRY_TPEES_PERIODOS(cobranza_p.Text.Trim());
                 dd_periodo.DataValueField = "Clave";
                 dd_periodo.DataTextField = "Periodo";
                 dd_periodo.DataBind();
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "combo_periodos_cob", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
         protected void combo_concepto_calendario()
         {
-            string Query = "SELECT DISTINCT tcoca_clave Clave, tcoca_desc Concepto_Cal FROM tcoca " +
-                           "UNION " +
-                           "SELECT DISTINCT '0','----Selecciona un Concepto----' Concepto_Cal  " +
-                           "ORDER BY 1";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            DataTable TablaCampus = new DataTable();
-            MySqlCommand ConsultaMySql = new MySqlCommand();
-            MySqlDataReader DatosMySql;
             try
             {
-                ConsultaMySql.Connection = ConexionMySql;
-                ConsultaMySql.CommandType = CommandType.Text;
-                ConsultaMySql.CommandText = Query;
-                DatosMySql = ConsultaMySql.ExecuteReader();
-                TablaCampus.Load(DatosMySql, LoadOption.OverwriteChanges);
-                cobranza_conc_cal.DataSource = TablaCampus;
+                cobranza_conc_cal.DataSource = serviceCat.QRY_TCOCA_COMBO();
                 cobranza_conc_cal.DataValueField = "Clave";
                 cobranza_conc_cal.DataTextField = "Concepto_Cal";
                 cobranza_conc_cal.DataBind();
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "combo_concepto_cal", Session["usuario"]?.ToString() ?? "Sistema");
             }
-            finally
-            {
-                ConexionMySql.Close();
-            }
-        }
-        
+        } 
         protected void combo_concepto_cobranza()
         {
-            string Query = "SELECT DISTINCT tcoco_clave Clave, tcoco_desc Concepto_Cob FROM tcoco " +
-                           "UNION " +
-                           "SELECT DISTINCT '0','----Selecciona un Concepto----' Concepto_Cob  " +
-                           "ORDER BY 1";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            DataTable TablaCampus = new DataTable();
-            MySqlCommand ConsultaMySql = new MySqlCommand();
-            MySqlDataReader DatosMySql;
             try
             {
-                ConsultaMySql.Connection = ConexionMySql;
-                ConsultaMySql.CommandType = CommandType.Text;
-                ConsultaMySql.CommandText = Query;
-                DatosMySql = ConsultaMySql.ExecuteReader();
-                TablaCampus.Load(DatosMySql, LoadOption.OverwriteChanges);
-                cobranza_concepto.DataSource = TablaCampus;
+                cobranza_concepto.DataSource = serviceCat.QRY_TCOCO_COMBO();
                 cobranza_concepto.DataValueField = "Clave";
                 cobranza_concepto.DataTextField = "Concepto_Cob";
                 cobranza_concepto.DataBind();
-
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "combo_concepto_cob", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
 
         protected void insertar_parametros_c()
         {
-            string Query = "INSERT INTO tpaco VALUES('" + cobranza_p.Text + "','" + cobranza_c.SelectedValue + "','" + cobranza_n.SelectedValue + "','" + cobranza_tipo_p.SelectedValue + "'," +descuento_ins.Text + "," + descuento_col.Text + ",'" +cobranza_conc_cal.SelectedValue + "','" + cobranza_concepto.SelectedValue + "','" + Session["usuario"].ToString() + "',current_timestamp())";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            MySqlCommand mysqlcmd = new MySqlCommand(Query, ConexionMySql);
-            mysqlcmd.CommandType = CommandType.Text;
             try
             {
-                mysqlcmd.ExecuteNonQuery();
+                ModelInsCobranzaRequest request = new ModelInsCobranzaRequest
+                {
+                    p_periodo = cobranza_p.Text.Trim(),
+                    p_campus = cobranza_c.SelectedValue,
+                    p_nivel = cobranza_n.SelectedValue,
+                    p_tipo_per = cobranza_tipo_p.SelectedValue,
+                    p_desc_ins = string.IsNullOrEmpty(descuento_ins.Text) ? 0 : Convert.ToDecimal(descuento_ins.Text),
+                    p_desc_col = string.IsNullOrEmpty(descuento_col.Text) ? 0 : Convert.ToDecimal(descuento_col.Text),
+                    p_conc_cal = cobranza_conc_cal.SelectedValue,
+                    p_concepto = cobranza_concepto.SelectedValue,
+                    p_user = Session["usuario"]?.ToString() ?? "Sistema"
+                };
+                serviceCat.InsertarParametrosCobranza(request);
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "Guardar", "save();", true);
+                grid_cobranza_bind(); 
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "insertar_parametros_cob", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
 
         protected void actualizar_parametros_c()
         {
-            string Query = "UPDATE tpaco SET tpaco_pdesc_insc='" + descuento_ins.Text + "',tpaco_pdesc_parc='" + descuento_col.Text + "',tpaco_tcoca_clave='" + cobranza_conc_cal.Text + "',tpaco_tcoco_clave='" + cobranza_concepto.SelectedValue + "',tpaco_user='" + Session["usuario"].ToString() + "',tpaco_date= current_timestamp() WHERE tpaco_tpees_clave='" + cobranza_p.Text + "' AND tpaco_tcamp_clave='"+cobranza_c.SelectedValue+"' AND tpaco_tnive_clave='"+cobranza_n.Text+"' AND tpaco_clave='"+cobranza_tipo_p.SelectedValue+"'";
-            MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-            ConexionMySql.Open();
-            MySqlCommand mysqlcmd = new MySqlCommand(Query, ConexionMySql);
-            mysqlcmd.CommandType = CommandType.Text;
             try
             {
-                mysqlcmd.ExecuteNonQuery();
+                ModelInsCobranzaRequest request = new ModelInsCobranzaRequest
+                {
+                    p_periodo = cobranza_p.Text.Trim(),
+                    p_campus = cobranza_c.SelectedValue,
+                    p_nivel = cobranza_n.SelectedValue,
+                    p_tipo_per = cobranza_tipo_p.SelectedValue,
+                    p_desc_ins = string.IsNullOrEmpty(descuento_ins.Text) ? 0 : Convert.ToDecimal(descuento_ins.Text),
+                    p_desc_col = string.IsNullOrEmpty(descuento_col.Text) ? 0 : Convert.ToDecimal(descuento_col.Text),
+                    p_conc_cal = cobranza_conc_cal.SelectedValue,
+                    p_concepto = cobranza_concepto.SelectedValue,
+                    p_user = Session["usuario"]?.ToString() ?? "Sistema"
+                };
+                serviceCat.ActualizarParametrosCobranza(request);
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "update_p", "update();", true);
+                
+                grid_cobranza_bind();
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
-            }
-            finally
-            {
-                ConexionMySql.Close();
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "actualizar_parametros_cob", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
 
         protected void grid_cobranza_bind()
         {
-            string Query = "";
-            Query = "SELECT tpaco_tcamp_clave C_Campus,tcamp_desc Campus, tpaco_tnive_clave C_Nivel,tnive_desc Nivel,tpaco_clave Clave,CASE WHEN tpaco_clave='01' THEN 'ANTICIPADO' WHEN tpaco_clave='02' THEN 'REGULAR' WHEN tpaco_clave='03' THEN 'EXTEMPORANEO' END Tipo_Periodo,tpaco_pdesc_insc Desc_Insc,tpaco_pdesc_parc Desc_Col,tcoca_clave C_Conce_Cal,tcoca_desc Conce_Calendario,tcoco_clave C_Conce_Cob,tcoco_desc Conce_Cobranza,tpaco_tpees_clave Periodo " +
-                    "FROM tpaco " +
-                    "INNER JOIN tcamp ON tcamp_clave = tpaco_tcamp_clave " +
-                    "INNER JOIN tnive ON tnive_clave = tpaco_tnive_clave " +
-                    "INNER JOIN tcoco ON tcoco_clave = tpaco_tcoco_clave " +
-                    "INNER JOIN tcoca ON tcoca_clave = tpaco_tcoca_clave " +
-                    "WHERE tpaco_tpees_clave='"+cobranza_p.Text+"' ";
-
-            if (cobranza_c.SelectedValue != "0")
-            {
-                Query += "AND tpaco_tcamp_clave='" + cobranza_c.SelectedValue + "' ";
-            }
-            if (cobranza_n.SelectedValue != "0")
-            {
-                Query += "AND tpaco_tnive_clave='" + cobranza_n.SelectedValue + "' ";
-            }
-            if (cobranza_tipo_p.SelectedValue != "0")
-            {
-                Query += "AND tpaco_clave='" + cobranza_tipo_p.SelectedValue + "' ";
-            }
-            Query += " ORDER BY 1,3,5";
             try
             {
-                MySqlConnection ConexionMySql = new MySqlConnection(ConfigurationManager.ConnectionStrings["MysqlConnectionStringSAES"].ConnectionString);
-                ConexionMySql.Open();
-                MySqlDataAdapter dataadapter = new MySqlDataAdapter(Query, ConexionMySql);
-                DataSet ds = new DataSet();
-                dataadapter.Fill(ds, "cobranza");
-                GridCobranza.DataSource = ds;
+                GridCobranza.DataSource = serviceCat.QRY_TPACO_GRID(
+                    cobranza_p.Text.Trim(),
+                    cobranza_c.SelectedValue,
+                    cobranza_n.SelectedValue,
+                    cobranza_tipo_p.SelectedValue
+                );
                 GridCobranza.EditIndex = -1;
                 GridCobranza.DataBind();
-                GridCobranza.DataMember = "cobranza";
-                GridCobranza.HeaderRow.TableSection = TableRowSection.TableHeader;
-                GridCobranza.UseAccessibleHeader = true;
-
-
+                if (GridCobranza.Rows.Count > 0)
+                {
+                    GridCobranza.HeaderRow.TableSection = TableRowSection.TableHeader;
+                    GridCobranza.UseAccessibleHeader = true;
+                }
             }
             catch (Exception ex)
             {
-                string test = ex.Message;
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "grid_cobranza_bind", Session["usuario"]?.ToString() ?? "Sistema");
             }
         }
+        protected void cobranza_c_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                combo_nivel_cobranza(cobranza_c.SelectedValue);
+                if (!String.IsNullOrEmpty(cobranza_p.Text.Trim()))
+                {
+                    grid_cobranza_bind();
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable_cobranza", "load_datatable_cobranza();", true);
+                }
+
+                actualizar_cob.Attributes.Add("style", "display:none");
+                guardar_cob.Attributes.Add("style", "display:initial");
+            }
+            catch (Exception ex)
+            {
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "cobranza_c_changed", Session["usuario"]?.ToString() ?? "Sistema");
+            }
+        }
+        protected void dd_periodo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                dd_term.Attributes.Add("style", "display:none");
+                term_text.Attributes.Add("style", "display:initial");
+                cobranza_p.Text = dd_periodo.SelectedValue;
+                if (dd_periodo.SelectedValue != "0")
+                {
+                    grid_cobranza_bind();
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable_cobranza", "load_datatable_cobranza();", true);
+                }
+                actualizar_cob.Attributes.Add("style", "display:none");
+                guardar_cob.Attributes.Add("style", "display:initial");
+            }
+            catch (Exception ex)
+            {
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "dd_periodo_changed", Session["usuario"]?.ToString() ?? "Sistema");
+            }
+        }
+
         protected void cobranza_p_TextChanged(object sender, EventArgs e)
         {
-            if (!valida_periodo(cobranza_p.Text))
+            try
             {
-                grid_cobranza_bind();
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable_cobranza", "load_datatable_cobranza();", true);
+                if (!String.IsNullOrEmpty(cobranza_p.Text.Trim()))
+                {
+                    if (!valida_periodo(cobranza_p.Text))
+                    {
+                        grid_cobranza_bind();
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable_cobranza", "load_datatable_cobranza();", true);
+                    }
+                    else
+                    {
+                        dd_term.Attributes.Add("style", "display:initial");
+                        term_text.Attributes.Add("style", "display:none");
+                        combo_periodos();
+                    }
+                }
             }
-            else
+            catch (Exception ex)
+            {
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "cobranza_p_TextChanged", Session["usuario"]?.ToString() ?? "Sistema");
+            }
+        }
+
+        protected void search_term_Click(object sender, ImageClickEventArgs e)
+        {
+            try
             {
                 dd_term.Attributes.Add("style", "display:initial");
                 term_text.Attributes.Add("style", "display:none");
                 combo_periodos();
             }
-            
-        }
-
-        protected void cobranza_c_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            combo_nivel_cobranza(cobranza_c.SelectedValue);
-            if (!String.IsNullOrEmpty(cobranza_p.Text))
+            catch (Exception ex)
             {
-                grid_cobranza_bind();
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable_cobranza", "load_datatable_cobranza();", true);
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "search_term_click", Session["usuario"]?.ToString() ?? "Sistema");
             }
-            actualizar_cob.Attributes.Add("style", "display:none");
-            guardar_cob.Attributes.Add("style", "display:initial");
-        }
-
-        protected void dd_periodo_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            dd_term.Attributes.Add("style", "display:none");
-            term_text.Attributes.Add("style", "display:initial");
-            cobranza_p.Text = dd_periodo.SelectedValue;
-            if (dd_periodo.SelectedValue != "0")
-            {
-                grid_cobranza_bind();
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable_cobranza", "load_datatable_cobranza();", true);
-            }
-            actualizar_cob.Attributes.Add("style", "display:none");
-            guardar_cob.Attributes.Add("style", "display:initial");
-        }
-
-        protected void search_term_Click(object sender, ImageClickEventArgs e)
-        {
-            dd_term.Attributes.Add("style", "display:initial");
-            term_text.Attributes.Add("style", "display:none");
-            combo_periodos();
         }
 
         protected bool valida_periodo(string periodo)
         {
-            string Query = "";
-            Query = "SELECT COUNT(*) Indicador FROM tpees WHERE tpees_clave='" + periodo + "'";
-            MySqlCommand cmd = new MySqlCommand(Query);
-            DataTable dt = GetData(cmd);
-            if (dt.Rows[0]["Indicador"].ToString() != "0")
+            try
             {
-                return false;
+                return serviceCat.ValidarPeriodoExiste(periodo.Trim());
             }
-            else
+            catch (Exception ex)
             {
-                return true;
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "valida_periodo", Session["usuario"]?.ToString() ?? "Sistema");
+                return false; 
             }
         }
 
         protected bool valida_tipo_peri()
         {
-            string Query = "";
-            Query = "SELECT COUNT(*) Indicador FROM tpaco WHERE tpaco_tpees_clave='"+cobranza_p.Text+"' AND tpaco_tcamp_clave='"+cobranza_c.SelectedValue+"' AND tpaco_tnive_clave='"+cobranza_n.SelectedValue+"' AND tpaco_clave='"+cobranza_tipo_p.SelectedValue+"'";
-            MySqlCommand cmd = new MySqlCommand(Query);
-            DataTable dt = GetData(cmd);
-            if (dt.Rows[0]["Indicador"].ToString() != "0")
+            try
             {
-                return false;
+                return serviceCat.ValidarConfiguracionCobranzaExiste(
+                    cobranza_p.Text.Trim(),
+                    cobranza_c.SelectedValue,
+                    cobranza_n.SelectedValue,
+                    cobranza_tipo_p.SelectedValue
+                );
             }
-            else
+            catch (Exception ex)
             {
-                return true;
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "valida_tipo_peri", Session["usuario"]?.ToString() ?? "Sistema");
+                return false; 
             }
         }
 
         protected void guardar_cob_Click(object sender, EventArgs e)
         {
-            if (valida_tipo_peri())
+            try
             {
-                if (!String.IsNullOrEmpty(cobranza_p.Text) && cobranza_c.SelectedValue != "0" && cobranza_n.SelectedValue != "0" && cobranza_tipo_p.SelectedValue != "0")
+                if (valida_tipo_peri())
                 {
-                    insertar_parametros_c();
+                    if (!String.IsNullOrEmpty(cobranza_p.Text.Trim()) && 
+                        cobranza_c.SelectedValue != "0" && 
+                        cobranza_n.SelectedValue != "0" && 
+                        cobranza_tipo_p.SelectedValue != "0")
+                    {
+                        insertar_parametros_c();
+                        
+                        lbl_error.Visible = false;
+                    }
+                    else
+                    {
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "validar_campos_cob", "validar_campos_cobranza();", true);
+                    }
                 }
                 else
                 {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "validar_campos_cob", "validar_campos_cobranza();", true);
+                    lbl_error_text.Text = "Esta configuración de cobranza ya se encuentra registrada para el periodo seleccionado.";
+                    lbl_error.Visible = true;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                lbl_error.Visible = Visible;
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "guardar_cob_click", Session["usuario"]?.ToString() ?? "Sistema");
             }
-
         }
 
         protected void btn_oculto_Click(object sender, EventArgs e)
         {
-            cobranza_c.SelectedValue = campus.Text;
-            combo_nivel_cobranza(cobranza_c.SelectedValue);
-            cobranza_n.SelectedValue = nivel.Text;
-            cobranza_tipo_p.SelectedValue = t_periodo.Text;
-            cobranza_p.Text = periodo_txt.Text;
-            cobranza_conc_cal.SelectedValue = conce_cal_txt.Text;
-            cobranza_concepto.SelectedValue = conce_cob_txt.Text;
-            descuento_ins.Text = desc_ins.Text;
-            descuento_col.Text = desc_col.Text;
-            grid_cobranza_bind();
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable_cobranza", "load_datatable_cobranza();", true);
-            actualizar_cob.Attributes.Add("style", "display:initial");
-            guardar_cob.Attributes.Add("style", "display:none");
+            try
+            {
+                cobranza_c.SelectedValue = campus.Text;
+                combo_nivel_cobranza(cobranza_c.SelectedValue);                
+                cobranza_n.SelectedValue = nivel.Text;
+                cobranza_tipo_p.SelectedValue = t_periodo.Text;
+                cobranza_p.Text = periodo_txt.Text;
+                cobranza_conc_cal.SelectedValue = conce_cal_txt.Text;
+                cobranza_concepto.SelectedValue = conce_cob_txt.Text;
+                descuento_ins.Text = desc_ins.Text;
+                descuento_col.Text = desc_col.Text;
+                grid_cobranza_bind();
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "load_datatable_cobranza", "load_datatable_cobranza();", true);
+                actualizar_cob.Attributes.Add("style", "display:initial");
+                guardar_cob.Attributes.Add("style", "display:none");
+            }
+            catch (Exception ex)
+            {
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "btn_oculto_cobranza", Session["usuario"]?.ToString() ?? "Sistema");
+            }
         }
 
         protected void actualizar_cob_Click(object sender, EventArgs e)
         {
-            actualizar_parametros_c();
+            try
+            {
+                actualizar_parametros_c();
+            }
+            catch (Exception ex)
+            {
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "actualizar_cob_click", Session["usuario"]?.ToString() ?? "Sistema");
+            }
         }
+
         #endregion
 
     }

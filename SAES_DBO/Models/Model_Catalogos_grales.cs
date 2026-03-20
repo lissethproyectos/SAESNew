@@ -684,8 +684,57 @@ namespace SAES_DBO.Models
         public string indicador { get; set; }
     }
 
+    public class ModelValCampusRequest
+    {
+        public string clave { get; set; }
+    }
+
+    public class ModelValCampusResponse
+    {
+        public string indicador { get; set; }
+    }
 
 
+    public class ModelInsCampusRequest
+    {
+        public string p_clave { get; set; }
+        public string p_nombre { get; set; }
+        public string p_direccion { get; set; }
+        public string p_colonia { get; set; }
+        public string p_pais { get; set; }
+        public string p_estado { get; set; }
+        public string p_dele { get; set; }
+        public string p_zip { get; set; }
+        public string p_user { get; set; }
+        public string p_estatus { get; set; }
+        public string p_abr { get; set; }
+        public string p_rfc { get; set; }
+    }
+        
+    public class ModelInsProgCampusRequest
+    {
+        public string p_campus { get; set; }
+        public string p_programa { get; set; }
+        public string p_admision { get; set; }
+        public string p_user { get; set; }
+        public string p_estatus { get; set; }
+    }
+        
+    public class ModelInsCobranzaRequest
+    {
+        public string p_periodo { get; set; }
+        public string p_campus { get; set; }
+        public string p_nivel { get; set; }
+        public string p_tipo_per { get; set; }
+        public decimal p_desc_ins { get; set; }
+        public decimal p_desc_col { get; set; }
+        public string p_conc_cal { get; set; }
+        public string p_concepto { get; set; }
+        public string p_user { get; set; }
+    }
+        
+
+        
     #endregion
 
 }
