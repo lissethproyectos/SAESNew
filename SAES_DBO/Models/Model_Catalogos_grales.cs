@@ -732,9 +732,7 @@ namespace SAES_DBO.Models
         public string p_concepto { get; set; }
         public string p_user { get; set; }
     }
-        
-
-        
+    
     #endregion
 
 }

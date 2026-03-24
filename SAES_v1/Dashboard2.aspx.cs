@@ -15,125 +15,91 @@ namespace SAES_v1
     {
         #region <Variables>
         Utilidades utils = new Utilidades();
-        Catalogos serviceCatalogo = new Catalogos();
-        GraficaService serviceGrafica= new GraficaService();
-        public string labels_dashboard_1;
-        public string data_dashboard_1;
-        public string label_dashboard_1;
+        // Usar los nombres de servicios estandarizados
+        Catalogos_grales_Service serviceCatalogo = new Catalogos_grales_Service();
+        GraficaService serviceGrafica = new GraficaService();
+        
+        public string labels_dashboard_1, data_dashboard_1, label_dashboard_1;
         #endregion
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
                 Inicializar();
 
-
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "GridDashboard", "load_datatable();", true);
-
+            // Esto mantiene el diseño de la tabla tras cada postback
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "GridDashboard", "if(typeof load_datatable === 'function') { load_datatable(); }", true);
         }
+
         private void Inicializar()
         {
-            ddl_periodo.DataSource = null;
-            ddl_periodo.DataBind();
-
-            ddl_campus.DataSource = null;
-            ddl_campus.DataBind();
-
-
-            ddl_nivel.DataSource = null;
-            ddl_nivel.DataBind();
-
-
-
-            ddl_periodo.DataSource = serviceCatalogo.ObtenerPeriodosEscolares();
-            ddl_periodo.DataValueField = "clave";
-            ddl_periodo.DataTextField = "nombre";
-            ddl_periodo.DataBind();
-            ddl_periodo_SelectedIndexChanged(null, null);
+            try {
+                // Carga inicial de periodos usando el servicio de 4 capas
+                ddl_periodo.DataSource = serviceCatalogo.QRY_TPEES_PERIODOS(""); 
+                ddl_periodo.DataValueField = "Clave";
+                ddl_periodo.DataTextField = "Periodo";
+                ddl_periodo.DataBind();
+                
+                // Forzar la primera carga
+                ddl_periodo_SelectedIndexChanged(null, null);
+            }
+            catch (Exception ex) {
+                Global.inserta_log(ex.Message.Replace("'", "-"), "Dashboard2_Init", Session["usuario"]?.ToString());
+            }
         }
 
         protected void ddl_periodo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //Gridtcv.Visible = false;
-            ddl_campus.DataSource = serviceCatalogo.ObtenerCampus();
+            // Cargar campus basado en el periodo (o general)
+            ddl_campus.DataSource = serviceCatalogo.QRY_TCAMP_COMBO();
             ddl_campus.DataValueField = "Clave";
-            ddl_campus.DataTextField = "Descripcion";
+            ddl_campus.DataTextField = "Campus";
             ddl_campus.DataBind();
-            //ddl_campus.Items.Insert(0, new ListItem("--Seleccione--", "0"));
+            
             ddl_campus_SelectedIndexChanged(null, null);
-            dashboard_1();
         }
 
         protected void ddl_campus_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ddl_nivel.DataSource = serviceCatalogo.obtenNivel(ddl_campus.SelectedValue);
-            ddl_nivel.DataValueField = "Clave";
-            ddl_nivel.DataTextField = "Descripcion";
+            // Cargar niveles filtrados por campus
+            string campusSel = ddl_campus.SelectedValue;
+            ddl_nivel.DataSource = serviceCatalogo.QRY_TNIVE_COBRANZA(campusSel);
+            ddl_nivel.DataValueField = "clave";
+            ddl_nivel.DataTextField = "nivel";
             ddl_nivel.DataBind();
-            //ddl_nivel.Items.Insert(0, new ListItem("--Seleccione--", "0"));
+            
             dashboard_1();
         }
-
-        protected void ddl_nivel_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //Gridtcv.Visible = false;
-            dashboard_1();
-        }
-
-        //pruebas
 
         private void dashboard_1()
         {
-            List<ModelObtenGraficaAdeudoResponse> lstDatosGrafica = new List<ModelObtenGraficaAdeudoResponse>();
             try
             {
-                if (ddl_periodo.SelectedValue != "0" && ddl_campus.SelectedValue == "" && ddl_nivel.SelectedValue == "")
-                {
-                    grvDatosGrafica.DataSource = null;
-                    grvDatosGrafica.DataBind();
-                    lstDatosGrafica = serviceGrafica.obtenerDatosGraficaAdeudo("1", ddl_periodo.SelectedValue, "", "");
-                    grvDatosGrafica.DataSource = lstDatosGrafica;
-                    grvDatosGrafica.DataBind();
-                    ScriptManager.RegisterStartupScript(this, GetType(), "Grafica_Adeudos", "GraficaAdeudos('1','"+ddl_periodo.SelectedValue+"', '', '');", true);
+                string periodo = ddl_periodo.SelectedValue;
+                string campus = ddl_campus.SelectedValue == "0" ? "" : ddl_campus.SelectedValue;
+                string nivel = ddl_nivel.SelectedValue == "0" ? "" : ddl_nivel.SelectedValue;
+                
+                // Determinar el "tipo" de consulta para el SP
+                string tipo = "1"; // Por defecto Periodo
+                if (!string.IsNullOrEmpty(campus)) tipo = "2";
+                if (!string.IsNullOrEmpty(nivel)) tipo = "3";
 
-                    //grvDatosGrafica = utils.BeginGrid(grvDatosGrafica, dt);
-                }
-                else if (ddl_periodo.SelectedValue != "0" && ddl_campus.SelectedValue != "" && ddl_nivel.SelectedValue == "")
-                {
-                    grvDatosGrafica.DataSource = null;
-                    grvDatosGrafica.DataBind();
-                    lstDatosGrafica = serviceGrafica.obtenerDatosGraficaAdeudo("2", ddl_periodo.SelectedValue, ddl_campus.SelectedValue, "");
-                    grvDatosGrafica.DataSource = lstDatosGrafica;
-                    grvDatosGrafica.DataBind();
-                    //DataTable dt = serviceGrafica.obtenerDatosGrafica1("5");
-                    //grvDatosGrafica = utils.BeginGrid(grvDatosGrafica, dt);
-                    ScriptManager.RegisterStartupScript(this, GetType(), "Grafica_Adeudos", "GraficaAdeudos(2," + ddl_periodo.SelectedValue+",'"+ddl_campus.SelectedValue+"', '');", true);
-                }
-               
+                var lstDatosGrafica = serviceGrafica.obtenerDatosGraficaAdeudo(tipo, periodo, campus, nivel);
+                
+                grvDatosGrafica.DataSource = lstDatosGrafica;
+                grvDatosGrafica.DataBind();
 
-                else
-                {
-                    grvDatosGrafica.DataSource = null;
-                    grvDatosGrafica.DataBind();
-                    lstDatosGrafica = serviceGrafica.obtenerDatosGraficaAdeudo("3", ddl_periodo.SelectedValue, ddl_campus.SelectedValue, ddl_nivel.SelectedValue);
-                    grvDatosGrafica.DataSource = lstDatosGrafica;
-                    grvDatosGrafica.DataBind();
-                    ScriptManager.RegisterStartupScript(this, GetType(), "Grafica_Adeudos", "GraficaAdeudos(3," + ddl_periodo.SelectedValue + ",'" + ddl_campus.SelectedValue + "', '"+ddl_nivel.SelectedValue+"');", true);
-                    //grvDatosGrafica.DataSource = null;
-                    //grvDatosGrafica.DataBind();
-                    //DataTable dt = serviceGrafica.obtenerDatosGrafica1("6");
-                    //grvDatosGrafica = utils.BeginGrid(grvDatosGrafica, dt);
-                }
+                // Llamada al script de JS para renderizar la gráfica
+                // Nota: Asegúrate de que GraficaAdeudos en JS maneje estos 4 parámetros
+                string script = $"GraficaAdeudos('{tipo}', '{periodo}', '{campus}', '{nivel}');";
+                ScriptManager.RegisterStartupScript(this, GetType(), "Grafica_Adeudos", script, true);
             }
             catch (Exception ex)
             {
-                //resultado.Text = ex.Message;
-                string mensaje_error = ex.Message.Replace("'", "-");
-                Global.inserta_log(mensaje_error, "tpees", Session["usuario"].ToString());
-                //ScriptManager.RegisterStartupScript(this, this.GetType(), "error_consulta", "error_consulta();", true);
-
+                Global.inserta_log(ex.Message.Replace("'", "-"), "Dashboard2_Grafica", Session["usuario"]?.ToString());
             }
         }
-
+        
         protected void grvDatosGrafica_SelectedIndexChanged(object sender, EventArgs e)
         {
             string ruta = string.Empty;
