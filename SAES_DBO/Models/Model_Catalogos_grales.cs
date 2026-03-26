@@ -680,6 +680,7 @@ namespace SAES_DBO.Models
 
     public class ModelValTzipResponse : BaseModelResponse
     {
+        
         [SPResponseColumnName("INDICADOR")]
         public string indicador { get; set; }
     }

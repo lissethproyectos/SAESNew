@@ -19,7 +19,7 @@ namespace SAES_v1
         #region <Variables>
         AlumnoService serviceAlumno = new AlumnoService();
         MenuService servicePermiso = new MenuService();
-        Catalogos serviceCatalogo= new Catalogos();
+        Catalogos_grales_Service serviceCatalogo = new Catalogos_grales_Service();
         #endregion
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -227,17 +227,15 @@ namespace SAES_v1
 
         protected bool valida_telefono(string matricula)
         {
-            string Query = "";
-            Query = "SELECT COUNT(*) Indicador FROM talco WHERE talco_tpers_num = (SELECT DISTINCT tpers_num FROM tpers WHERE tpers_id='" + matricula + "')";
-            MySqlCommand cmd = new MySqlCommand(Query);
-            DataTable dt = GetData(cmd);
-            if (dt.Rows[0]["Indicador"].ToString() == "0")
+            try 
             {
-                return false;
+                return serviceCatalogo.ValidarExistenciaTelefono(matricula);
             }
-            else
+            catch (Exception ex)
             {
-                return true;
+                string mensaje_error = ex.Message.Replace("'", "-");
+                Global.inserta_log(mensaje_error, "valida_telefono", Session["usuario"]?.ToString() ?? "Sistema");
+                return false;
             }
         }
 

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static SAES_DBO.Models.ModelCobranza;
+using static SAES_DBO.Models.ModelAlumno;
 
 namespace SAES_Services
 {
@@ -457,6 +458,17 @@ namespace SAES_Services
             {
                 return response[0].indicador == "0";
             }
+            return false;
+        }
+
+        public bool ValidarExistenciaTelefono(string matricula)
+        {
+            var request = new ModelValidaTalcoRequest { p_matricula = matricula };
+            var resultado = DB.CallSPListResult<ModelValidaTalcoResponse, ModelValidaTalcoRequest>("P_VAL_TALCO_EXISTE", request);
+            if (resultado != null && resultado.Count > 0)
+            {
+                return resultado[0].Indicador > 0;
+            }            
             return false;
         }
     }

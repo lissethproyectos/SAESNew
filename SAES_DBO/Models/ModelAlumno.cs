@@ -1283,5 +1283,15 @@ namespace SAES_DBO.Models
             public string contacto { get; set; }
         }
 
+        public class ModelValidaTalcoRequest
+        {
+            public string p_matricula { get; set; }
+        }
+
+        public class ModelValidaTalcoResponse
+        {
+            public int Indicador { get; set; }
+        }
+
     }
 }
